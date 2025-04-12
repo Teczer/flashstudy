@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Flashcard as FlashcardType } from "@/types";
-import { cn } from "@/lib/utils";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import { Flashcard as FlashcardType } from '@/types';
+import { useState } from 'react';
 
 interface FlashcardProps {
   card: FlashcardType;
@@ -12,12 +12,12 @@ interface FlashcardProps {
   onIncorrect?: () => void;
 }
 
-export function Flashcard({ 
-  card, 
+export function Flashcard({
+  card,
   showControls = false,
   onNext,
   onCorrect,
-  onIncorrect
+  onIncorrect,
 }: FlashcardProps) {
   const [flipped, setFlipped] = useState(false);
 
@@ -39,18 +39,20 @@ export function Flashcard({
 
   return (
     <div className="perspective-1000 w-full max-w-md mx-auto">
-      <div 
+      <div
         className={cn(
-          "relative w-full transition-transform duration-500 transform-style-3d cursor-pointer",
-          flipped ? "rotate-y-180" : ""
+          'relative w-full transition-transform duration-500 transform-style-3d cursor-pointer',
+          flipped ? 'rotate-y-180' : ''
         )}
         onClick={handleFlip}
       >
         {/* Front side - Question */}
-        <Card className={cn(
-          "absolute w-full h-full backface-hidden p-6 flex flex-col justify-between",
-          !flipped ? "z-10" : "z-0"
-        )}>
+        <Card
+          className={cn(
+            'absolute w-full h-full backface-hidden p-6 flex flex-col justify-between',
+            !flipped ? 'z-10' : 'z-0'
+          )}
+        >
           <CardContent className="pt-6 flex-grow flex items-center justify-center">
             <div className="text-center">
               <h3 className="text-lg font-medium mb-2">Question</h3>
@@ -63,21 +65,23 @@ export function Flashcard({
         </Card>
 
         {/* Back side - Answer */}
-        <Card className={cn(
-          "absolute w-full h-full backface-hidden p-6 rotate-y-180 flex flex-col justify-between",
-          flipped ? "z-10" : "z-0"
-        )}>
+        <Card
+          className={cn(
+            'absolute w-full h-full backface-hidden p-6 rotate-y-180 flex flex-col justify-between',
+            flipped ? 'z-10' : 'z-0'
+          )}
+        >
           <CardContent className="pt-6 flex-grow flex items-center justify-center">
             <div className="text-center">
               <h3 className="text-lg font-medium mb-2">Answer</h3>
               <p className="text-xl">{card.answer}</p>
             </div>
           </CardContent>
-          
+
           {showControls && (
             <div className="flex justify-center space-x-4 mt-4">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -86,7 +90,7 @@ export function Flashcard({
               >
                 Incorrect
               </Button>
-              <Button 
+              <Button
                 variant="outline"
                 className="border-green-500 text-green-500 hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-950"
                 onClick={(e) => {
@@ -98,7 +102,7 @@ export function Flashcard({
               </Button>
             </div>
           )}
-          
+
           {!showControls && (
             <div className="text-center text-sm text-muted-foreground mt-4">
               Click to see question

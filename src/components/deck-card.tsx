@@ -1,11 +1,3 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { FlashcardDeck } from "@/types";
-import { formatDate } from "@/lib/utils";
-import { BookOpen, Edit, Trash2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { deleteDeck } from "@/lib/storage";
-import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +8,22 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+import { deleteDeck } from '@/lib/storage';
+import { formatDate } from '@/lib/utils';
+import { FlashcardDeck } from '@/types';
+import { BookOpen, Edit, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface DeckCardProps {
   deck: FlashcardDeck;
@@ -30,7 +37,7 @@ export function DeckCard({ deck, onDelete }: DeckCardProps) {
   const handleDelete = () => {
     deleteDeck(deck.id);
     toast({
-      title: "Deck deleted",
+      title: 'Deck deleted',
       description: `"${deck.name}" has been deleted.`,
     });
     onDelete();
@@ -45,7 +52,9 @@ export function DeckCard({ deck, onDelete }: DeckCardProps) {
             {deck.cards.length} cards
           </span>
         </CardTitle>
-        <CardDescription className="line-clamp-2">{deck.description}</CardDescription>
+        <CardDescription className="line-clamp-2">
+          {deck.description}
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow">
         <div className="text-sm text-muted-foreground">
@@ -54,17 +63,17 @@ export function DeckCard({ deck, onDelete }: DeckCardProps) {
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => navigate(`/deck/${deck.id}`)}
         >
           <Edit className="h-4 w-4 mr-2" />
           Edit
         </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => navigate(`/study/${deck.id}`)}
           disabled={deck.cards.length === 0}
         >
@@ -82,13 +91,16 @@ export function DeckCard({ deck, onDelete }: DeckCardProps) {
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                This will permanently delete the "{deck.name}" deck and all its flashcards.
-                This action cannot be undone.
+                This will permanently delete the "{deck.name}" deck and all its
+                flashcards. This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
+              <AlertDialogAction
+                onClick={handleDelete}
+                className="bg-destructive text-destructive-foreground"
+              >
                 Delete
               </AlertDialogAction>
             </AlertDialogFooter>

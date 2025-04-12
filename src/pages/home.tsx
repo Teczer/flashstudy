@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { CreateDeckDialog } from "@/components/create-deck-dialog";
-import { DeckCard } from "@/components/deck-card";
-import { getDecks } from "@/lib/storage";
-import { FlashcardDeck } from "@/types";
-import { BookOpen } from "lucide-react";
+import { CreateDeckDialog } from '@/components/create-deck-dialog';
+import { DeckCard } from '@/components/deck-card';
+import { getDecks } from '@/lib/storage';
+import { FlashcardDeck } from '@/types';
+import { BookOpen } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export function HomePage() {
   const [decks, setDecks] = useState<FlashcardDeck[]>([]);
@@ -27,7 +27,7 @@ export function HomePage() {
           </p>
         </div>
         <div className="mt-4 md:mt-0">
-          <CreateDeckDialog />
+          <CreateDeckDialog loadDecks={loadDecks} />
         </div>
       </div>
 
@@ -36,9 +36,10 @@ export function HomePage() {
           <BookOpen className="h-16 w-16 text-muted-foreground mb-4" />
           <h2 className="text-xl font-semibold mb-2">No flashcard decks yet</h2>
           <p className="text-muted-foreground max-w-md mb-6">
-            Create your first deck to start organizing your flashcards for effective studying.
+            Create your first deck to start organizing your flashcards for
+            effective studying.
           </p>
-          <CreateDeckDialog />
+          <CreateDeckDialog loadDecks={loadDecks} />
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

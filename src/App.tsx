@@ -1,8 +1,8 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from '@/components/layout';
-import { HomePage } from '@/pages/home';
 import { DeckEditPage } from '@/pages/deck-edit';
+import { HomePage } from '@/pages/home';
 import { StudyPage } from '@/pages/study';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
 
 function App() {

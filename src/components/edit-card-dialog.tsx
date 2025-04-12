@@ -1,8 +1,4 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -11,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -19,15 +15,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { Flashcard } from "@/types";
-import { useToast } from "@/hooks/use-toast";
-import { Pencil } from "lucide-react";
+} from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { Flashcard } from '@/types';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Pencil } from 'lucide-react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const formSchema = z.object({
-  question: z.string().min(1, "Question is required"),
-  answer: z.string().min(1, "Answer is required"),
+  question: z.string().min(1, 'Question is required'),
+  answer: z.string().min(1, 'Answer is required'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -40,7 +40,7 @@ interface EditCardDialogProps {
 export function EditCardDialog({ card, onCardUpdate }: EditCardDialogProps) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
-  
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,12 +57,12 @@ export function EditCardDialog({ card, onCardUpdate }: EditCardDialogProps) {
     };
 
     onCardUpdate(updatedCard);
-    
+
     toast({
-      title: "Success",
-      description: "Flashcard has been updated.",
+      title: 'Success',
+      description: 'Flashcard has been updated.',
     });
-    
+
     setOpen(false);
   }
 
@@ -89,10 +89,7 @@ export function EditCardDialog({ card, onCardUpdate }: EditCardDialogProps) {
                 <FormItem>
                   <FormLabel>Question</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      className="min-h-[100px]"
-                      {...field} 
-                    />
+                    <Textarea className="min-h-[100px]" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -105,10 +102,7 @@ export function EditCardDialog({ card, onCardUpdate }: EditCardDialogProps) {
                 <FormItem>
                   <FormLabel>Answer</FormLabel>
                   <FormControl>
-                    <Textarea
-                      className="min-h-[100px]"
-                      {...field}
-                    />
+                    <Textarea className="min-h-[100px]" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -1,8 +1,4 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -11,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -19,15 +15,20 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { Flashcard } from "@/types";
-import { generateId } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
+} from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { generateId } from '@/lib/utils';
+import { Flashcard } from '@/types';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Plus } from 'lucide-react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const formSchema = z.object({
-  question: z.string().min(1, "Question is required"),
-  answer: z.string().min(1, "Answer is required"),
+  question: z.string().min(1, 'Question is required'),
+  answer: z.string().min(1, 'Answer is required'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -39,12 +40,12 @@ interface CreateCardDialogProps {
 export function CreateCardDialog({ onCardCreate }: CreateCardDialogProps) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
-  
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      question: "",
-      answer: "",
+      question: '',
+      answer: '',
     },
   });
 
@@ -57,12 +58,12 @@ export function CreateCardDialog({ onCardCreate }: CreateCardDialogProps) {
     };
 
     onCardCreate(newCard);
-    
+
     toast({
-      title: "Success",
-      description: "Flashcard has been created.",
+      title: 'Success',
+      description: 'Flashcard has been created.',
     });
-    
+
     form.reset();
     setOpen(false);
   }
@@ -70,7 +71,10 @@ export function CreateCardDialog({ onCardCreate }: CreateCardDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Add Flashcard</Button>
+        <Button className="gap-2">
+          <Plus className="h-4 w-4" />
+          <span>Add Flashcard</span>
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -88,10 +92,10 @@ export function CreateCardDialog({ onCardCreate }: CreateCardDialogProps) {
                 <FormItem>
                   <FormLabel>Question</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="Enter your question here..." 
+                    <Textarea
+                      placeholder="Enter your question here..."
                       className="min-h-[100px]"
-                      {...field} 
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
