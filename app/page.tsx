@@ -7,11 +7,13 @@ import { CollectionsGrid } from '@/components/collections/collections-grid';
 import { CollectionDetail } from '@/components/collection-detail/collection-detail';
 import { PracticeSession } from '@/components/practice/practice-session';
 import { useCollections } from '@/hooks/use-collections';
+import { useTranslation } from '@/lib/i18n';
 import { toast } from 'sonner';
 
 type View = 'collections' | 'collection-detail' | 'practice';
 
 export default function Home() {
+  const { t } = useTranslation();
   const [currentView, setCurrentView] = useState<View>('collections');
   const [selectedCollection, setSelectedCollection] =
     useState<Collection | null>(null);
@@ -26,23 +28,23 @@ export default function Home() {
 
   const handlePractice = useCallback((collection: Collection) => {
     if (collection.cards.length === 0) {
-      toast.error('No cards available', {
-        description: 'Add some cards to this collection before practicing.',
+      toast.error(t.noCardsAvailable, {
+        description: t.noCardsAvailableDescription,
       });
       return;
     }
 
     setSelectedCollection(collection);
     setCurrentView('practice');
-  }, []);
+  }, [t]);
 
   const handlePracticeComplete = useCallback(
     (score: { correct: number; total: number }) => {
-      toast.success('Practice session completed!', {
-        description: `You got ${score.correct} out of ${score.total} cards correct.`,
+      toast.success(t.sessionCompleted, {
+        description: `${t.sessionCompletedDescription} ${score.correct} out of ${score.total} cards correct.`,
       });
     },
-    []
+    [t]
   );
 
   const handleBackToCollections = useCallback(() => {
@@ -75,10 +77,10 @@ export default function Home() {
           <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl">
             <div className="mb-8 text-center sm:text-left">
               <h1 className="text-3xl sm:text-4xl font-bold mb-3 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-                All Collections
+                {t.allCollections}
               </h1>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto sm:mx-0">
-                All your flashcard collections in one place
+                {t.allCollectionsDescription}
               </p>
             </div>
             <div className="w-full">

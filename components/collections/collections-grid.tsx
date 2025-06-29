@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Plus, Search } from 'lucide-react';
 import { useCollections } from '@/hooks/use-collections';
+import { useTranslation } from '@/lib/i18n';
 import { toast } from 'sonner';
 
 interface CollectionsGridProps {
@@ -26,6 +27,7 @@ export function CollectionsGrid({
   onPractice,
   onViewCollection,
 }: CollectionsGridProps) {
+  const { t } = useTranslation();
   const {
     collections,
     loading,
@@ -68,13 +70,13 @@ export function CollectionsGrid({
     if (editingCollection) {
       updateCollection(editingCollection.id, { title, description, color });
       setEditingCollection(undefined);
-      toast.success('Collection updated!', {
-        description: `"${title}" has been updated successfully.`,
+      toast.success(t.collectionUpdated, {
+        description: `"${title}" ${t.collectionUpdatedDescription}`,
       });
     } else {
       createCollection(title, description, color);
-      toast.success('Collection created!', {
-        description: `"${title}" has been created successfully.`,
+      toast.success(t.collectionCreated, {
+        description: `"${title}" ${t.collectionCreatedDescription}`,
       });
     }
   };
@@ -88,12 +90,12 @@ export function CollectionsGrid({
     const collection = collections.find((c) => c.id === id);
     if (
       confirm(
-        `Are you sure you want to delete "${collection?.title}"? This action cannot be undone and will delete all ${collection?.cards.length || 0} cards in this collection.`
+        `${t.deleteCollectionConfirm} "${collection?.title}"? This action cannot be undone and will delete all ${collection?.cards.length || 0} cards in this collection.`
       )
     ) {
       deleteCollection(id);
-      toast.success('Collection deleted!', {
-        description: `"${collection?.title}" has been deleted.`,
+      toast.success(t.collectionDeletedTitle, {
+        description: `"${collection?.title}" ${t.collectionDeletedDescription}`,
       });
     }
   };
@@ -114,7 +116,7 @@ export function CollectionsGrid({
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Search collections..."
+              placeholder={t.searchCollections}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -131,9 +133,9 @@ export function CollectionsGrid({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="updated">Recently Updated</SelectItem>
-              <SelectItem value="created">Recently Created</SelectItem>
-              <SelectItem value="title">Title A-Z</SelectItem>
+              <SelectItem value="updated">{t.recentlyUpdated}</SelectItem>
+              <SelectItem value="created">{t.recentlyCreated}</SelectItem>
+              <SelectItem value="title">{t.titleAZ}</SelectItem>
             </SelectContent>
           </Select>
 
@@ -142,7 +144,7 @@ export function CollectionsGrid({
             className="flex items-center space-x-2"
           >
             <Plus className="h-4 w-4" />
-            <span>New Collection</span>
+            <span>{t.newCollection}</span>
           </Button>
         </div>
       </div>
@@ -155,12 +157,12 @@ export function CollectionsGrid({
               <Plus className="h-8 w-8 text-primary" />
             </div>
             <h3 className="text-xl font-semibold mb-3">
-              {searchTerm ? 'No collections found' : 'No collections yet'}
+              {searchTerm ? t.noCardsFound : t.noCollections}
             </h3>
             <p className="text-muted-foreground mb-6 leading-relaxed">
               {searchTerm
-                ? "Try adjusting your search terms to find what you're looking for."
-                : 'Create your first flashcard collection to get started.'}
+                ? t.noCardsFoundDescription
+                : t.noCollectionsDescription}
             </p>
             {!searchTerm && (
               <Button
@@ -169,7 +171,7 @@ export function CollectionsGrid({
                 className="px-8"
               >
                 <Plus className="mr-2 h-5 w-5" />
-                Create Collection
+                {t.createCollection}
               </Button>
             )}
           </div>

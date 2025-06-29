@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -17,6 +16,7 @@ import { Separator } from '@/components/ui/separator';
 import { Sparkles, Loader2, AlertCircle, Info } from 'lucide-react';
 import { generateQuestions, validateApiKey } from '@/lib/openai';
 import { GeneratedQuestion } from '@/types';
+import { useTranslation } from '@/lib/i18n';
 import { toast } from 'sonner';
 
 interface AIQuestionGeneratorProps {
@@ -28,22 +28,24 @@ export function AIQuestionGenerator({
   collectionTitle,
   onQuestionsGenerated,
 }: AIQuestionGeneratorProps) {
+  const { t, language } = useTranslation();
   const [prompt, setPrompt] = useState('');
   const [questionCount, setQuestionCount] = useState('10');
+  const [difficulty, setDifficulty] = useState<'easy' | 'intermediate' | 'hard'>('intermediate');
   const [isGenerating, setIsGenerating] = useState(false);
   const [hasApiKey, setHasApiKey] = useState(validateApiKey());
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
-      toast.error('Veuillez entrer un sujet', {
-        description: 'Décrivez le type de questions que vous souhaitez générer.',
+      toast.error(t.pleaseEnterPrompt, {
+        description: t.pleaseEnterPromptDescription,
       });
       return;
     }
 
     if (!hasApiKey) {
-      toast.error('Clé API OpenAI requise', {
-        description: 'Veuillez configurer votre clé API OpenAI pour utiliser cette fonctionnalité.',
+      toast.error(t.openaiKeyRequiredError, {
+        description: t.openaiKeyRequiredErrorDescription,
       });
       return;
     }
@@ -54,21 +56,23 @@ export function AIQuestionGenerator({
       const questions = await generateQuestions(
         prompt.trim(),
         parseInt(questionCount),
+        difficulty,
+        language,
         collectionTitle
       );
 
       onQuestionsGenerated(questions);
       
-      toast.success('Questions générées avec succès!', {
-        description: `${questions.length} questions générées avec l'IA.`,
+      toast.success(t.questionsGenerated, {
+        description: `${questions.length} ${t.questionsGeneratedDescription}`,
       });
 
       // Clear the form
       setPrompt('');
     } catch (error) {
       console.error('Generation error:', error);
-      toast.error('Échec de la génération des questions', {
-        description: error instanceof Error ? error.message : 'Veuillez réessayer.',
+      toast.error(t.generationFailed, {
+        description: error instanceof Error ? error.message : t.generationFailedDescription,
       });
     } finally {
       setIsGenerating(false);
@@ -88,10 +92,10 @@ export function AIQuestionGenerator({
           </div>
           <div>
             <h3 className="text-lg font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Générateur de Questions IA
+              {t.aiQuestionGenerator}
             </h3>
             <p className="text-sm text-muted-foreground">
-              Générez des cartes mémoire automatiquement avec ChatGPT
+              {t.aiQuestionGeneratorDescription}
             </p>
           </div>
         </div>
@@ -104,10 +108,10 @@ export function AIQuestionGenerator({
             <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
             <div className="space-y-2">
               <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
-                Clé API OpenAI Requise
+                {t.openaiKeyRequired}
               </p>
               <p className="text-sm text-amber-700 dark:text-amber-300">
-                Pour utiliser la génération de questions IA, veuillez ajouter votre clé API OpenAI dans la variable d'environnement{' '}
+                {t.openaiKeyRequiredDescription}{' '}
                 <code className="px-1 py-0.5 bg-amber-100 dark:bg-amber-900/50 rounded text-xs">
                   NEXT_PUBLIC_OPENAI_API_KEY
                 </code>
@@ -118,14 +122,14 @@ export function AIQuestionGenerator({
 
         {/* Form */}
         <div className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="sm:col-span-2 space-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
               <Label htmlFor="prompt" className="text-sm font-medium">
-                Sujet/Prompt de Question *
+                {t.questionTopic} *
               </Label>
               <Textarea
                 id="prompt"
-                placeholder="ex: Équations d'algèbre de base, Vocabulaire français pour débutants, Événements clés de la Seconde Guerre mondiale, Fondamentaux JavaScript..."
+                placeholder={t.questionTopicPlaceholder}
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 rows={3}
@@ -134,26 +138,63 @@ export function AIQuestionGenerator({
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="count" className="text-sm font-medium">
-                Nombre de Questions
-              </Label>
-              <Select
-                value={questionCount}
-                onValueChange={setQuestionCount}
-                disabled={isGenerating || !hasApiKey}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({ length: 50 }, (_, i) => i + 1).map((num) => (
-                    <SelectItem key={num} value={num.toString()}>
-                      {num} question{num !== 1 ? 's' : ''}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="count" className="text-sm font-medium">
+                  {t.numberOfQuestions}
+                </Label>
+                <Select
+                  value={questionCount}
+                  onValueChange={setQuestionCount}
+                  disabled={isGenerating || !hasApiKey}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 50 }, (_, i) => i + 1).map((num) => (
+                      <SelectItem key={num} value={num.toString()}>
+                        {num} question{num !== 1 ? 's' : ''}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="difficulty" className="text-sm font-medium">
+                  {t.difficulty}
+                </Label>
+                <Select
+                  value={difficulty}
+                  onValueChange={(value: 'easy' | 'intermediate' | 'hard') => setDifficulty(value)}
+                  disabled={isGenerating || !hasApiKey}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="easy">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>{t.easy}</span>
+                      </div>
                     </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                    <SelectItem value="intermediate">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                        <span>{t.intermediate}</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="hard">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <span>{t.hard}</span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 
@@ -161,11 +202,11 @@ export function AIQuestionGenerator({
           <div className="flex items-start space-x-3 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50 rounded-lg">
             <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-blue-700 dark:text-blue-300">
-              <p className="font-medium mb-1">Conseils pour de meilleurs résultats :</p>
+              <p className="font-medium mb-1">{t.tipsTitle}</p>
               <ul className="space-y-1 text-xs">
-                <li>• Soyez spécifique sur le sujet et le niveau de difficulté</li>
-                <li>• Incluez le contexte comme "pour débutants" ou "niveau avancé"</li>
-                <li>• Mentionnez le format préféré (choix multiples, réponse courte, etc.)</li>
+                <li>{t.tip1}</li>
+                <li>{t.tip2}</li>
+                <li>{t.tip3}</li>
               </ul>
             </div>
           </div>
@@ -180,12 +221,12 @@ export function AIQuestionGenerator({
             {isGenerating ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Génération de {questionCount} questions...
+                {t.generating} {questionCount} questions...
               </>
             ) : (
               <>
                 <Sparkles className="mr-2 h-4 w-4" />
-                Générer avec ChatGPT
+                {t.generateWithChatGPT}
               </>
             )}
           </Button>

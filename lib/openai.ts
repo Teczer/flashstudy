@@ -10,18 +10,52 @@ const openai = new OpenAI({
 export async function generateQuestions(
   prompt: string,
   count: number,
+  difficulty: 'easy' | 'intermediate' | 'hard',
+  language: 'fr' | 'en' | 'es' | 'de',
   collectionTitle?: string
 ): Promise<GeneratedQuestion[]> {
   try {
+    const languageInstructions = {
+      fr: 'Générez les questions et réponses en français.',
+      en: 'Generate questions and answers in English.',
+      es: 'Genera las preguntas y respuestas en español.',
+      de: 'Generieren Sie Fragen und Antworten auf Deutsch.',
+    };
+
+    const difficultyInstructions = {
+      easy: {
+        fr: 'Niveau facile - questions de base et concepts fondamentaux',
+        en: 'Easy level - basic questions and fundamental concepts',
+        es: 'Nivel fácil - preguntas básicas y conceptos fundamentales',
+        de: 'Einfaches Niveau - grundlegende Fragen und fundamentale Konzepte',
+      },
+      intermediate: {
+        fr: 'Niveau intermédiaire - questions modérément complexes nécessitant une compréhension approfondie',
+        en: 'Intermediate level - moderately complex questions requiring deeper understanding',
+        es: 'Nivel intermedio - preguntas moderadamente complejas que requieren comprensión profunda',
+        de: 'Mittleres Niveau - mäßig komplexe Fragen, die tieferes Verständnis erfordern',
+      },
+      hard: {
+        fr: 'Niveau difficile - questions avancées et complexes pour experts',
+        en: 'Hard level - advanced and complex questions for experts',
+        es: 'Nivel difícil - preguntas avanzadas y complejas para expertos',
+        de: 'Schweres Niveau - fortgeschrittene und komplexe Fragen für Experten',
+      },
+    };
+
     const systemPrompt = `You are an expert educational content creator. Generate exactly ${count} high-quality flashcard questions and answers based on the user's prompt.
+
+${languageInstructions[language]}
+${difficultyInstructions[difficulty][language]}
 
 Rules:
 1. Return ONLY a valid JSON array of objects with "question" and "answer" properties
 2. Each question should be clear, concise, and educational
 3. Each answer should be accurate and complete but not overly long
-4. Questions should vary in difficulty and style
+4. Questions should vary in difficulty and style according to the specified difficulty level
 5. Make questions engaging and memorable
 6. No additional text, explanations, or formatting outside the JSON array
+7. Ensure all content is in ${language === 'fr' ? 'French' : language === 'en' ? 'English' : language === 'es' ? 'Spanish' : 'German'}
 
 Example format:
 [
@@ -31,7 +65,10 @@ Example format:
 
     const userPrompt = `Generate ${count} flashcard questions about: ${prompt}${
       collectionTitle ? ` (for collection: "${collectionTitle}")` : ''
-    }`;
+    }
+    
+Difficulty level: ${difficulty}
+Language: ${language}`;
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
