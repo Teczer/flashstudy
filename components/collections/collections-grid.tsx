@@ -15,18 +15,15 @@ import {
 } from '@/components/ui/select';
 import { Plus, Search } from 'lucide-react';
 import { useCollections } from '@/hooks/use-collections';
-import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 
 interface CollectionsGridProps {
   onPractice: (collection: Collection) => void;
   onViewCollection: (collection: Collection) => void;
-  selectedFolderId?: string | null;
 }
 
 export function CollectionsGrid({
   onPractice,
   onViewCollection,
-  selectedFolderId,
 }: CollectionsGridProps) {
   const {
     collections,
@@ -45,19 +42,13 @@ export function CollectionsGrid({
     'updated'
   );
 
-  // Filter collections based on selected folder
+  // Filter collections based on search
   const filteredCollections = collections.filter((collection) => {
-    const matchesFolder =
-      selectedFolderId === null
-        ? true // Show all collections in "All" view
-        : //@ts-ignore
-          collection.folderIds.includes(selectedFolderId);
-
     const matchesSearch =
       collection.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       collection.description?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    return matchesFolder && matchesSearch;
+    return matchesSearch;
   });
 
   const sortedCollections = filteredCollections.sort((a, b) => {
@@ -77,12 +68,7 @@ export function CollectionsGrid({
       updateCollection(editingCollection.id, { title, description, color });
       setEditingCollection(undefined);
     } else {
-      createCollection(
-        title,
-        description,
-        color,
-        selectedFolderId || undefined
-      );
+      createCollection(title, description, color);
     }
   };
 
@@ -108,11 +94,6 @@ export function CollectionsGrid({
       </div>
     );
   }
-
-  const getFolderDisplayName = () => {
-    if (selectedFolderId === null) return 'All';
-    return 'Selected Folder';
-  };
 
   return (
     <div className="w-full space-y-8">
@@ -165,12 +146,12 @@ export function CollectionsGrid({
             <h3 className="text-xl font-semibold mb-3">
               {searchTerm
                 ? 'No collections found'
-                : `No collections in ${getFolderDisplayName()}`}
+                : 'No collections yet'}
             </h3>
             <p className="text-muted-foreground mb-6 leading-relaxed">
               {searchTerm
                 ? "Try adjusting your search terms to find what you're looking for."
-                : 'Create your first flashcard collection in this folder to get started.'}
+                : 'Create your first flashcard collection to get started.'}
             </p>
             {!searchTerm && (
               <Button
@@ -185,23 +166,18 @@ export function CollectionsGrid({
           </div>
         </div>
       ) : (
-        <SortableContext
-          items={sortedCollections.map((c) => c.id)}
-          strategy={rectSortingStrategy}
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {sortedCollections.map((collection) => (
-              <CollectionCard
-                key={collection.id}
-                collection={collection}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onPractice={onPractice}
-                onView={onViewCollection}
-              />
-            ))}
-          </div>
-        </SortableContext>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {sortedCollections.map((collection) => (
+            <CollectionCard
+              key={collection.id}
+              collection={collection}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onPractice={onPractice}
+              onView={onViewCollection}
+            />
+          ))}
+        </div>
       )}
 
       {/* Collection Form */}

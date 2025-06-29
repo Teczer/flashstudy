@@ -18,11 +18,9 @@ import {
   Trash2, 
   Play,
   Calendar,
-  Hash,
-  GripVertical
+  Hash
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { useDraggable } from '@dnd-kit/core';
 
 interface CollectionCardProps {
   collection: Collection;
@@ -54,20 +52,6 @@ export function CollectionCard({
 }: CollectionCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    isDragging,
-  } = useDraggable({
-    id: collection.id,
-    data: {
-      type: 'collection',
-      collection,
-    },
-  });
-
   // Optimized event handlers with useCallback
   const handleMouseEnter = useCallback(() => setIsHovered(true), []);
   const handleMouseLeave = useCallback(() => setIsHovered(false), []);
@@ -82,17 +66,9 @@ export function CollectionCard({
   // Determine text color for practice button based on background color
   const practiceButtonTextColor = isLightColor(collection.color) ? '#000000' : '#ffffff';
 
-  const style = transform ? {
-    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-  } : undefined;
-
   return (
     <Card 
-      ref={setNodeRef}
-      style={style}
-      className={`group relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer border-0 shadow-md ${
-        isDragging ? 'opacity-50 rotate-3 scale-105 shadow-2xl' : ''
-      }`}
+      className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer border-0 shadow-md"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleCardClick}
@@ -126,18 +102,6 @@ export function CollectionCard({
           </div>
           
           <div className="flex items-center space-x-1">
-            {/* Drag Handle */}
-            <div
-              {...attributes}
-              {...listeners}
-              className={`transition-opacity duration-200 cursor-grab active:cursor-grabbing p-1 rounded hover:bg-accent ${
-                isHovered ? 'opacity-100' : 'opacity-0'
-              }`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <GripVertical className="h-4 w-4 text-muted-foreground" />
-            </div>
-            
             <DropdownMenu>
               <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                 <Button 

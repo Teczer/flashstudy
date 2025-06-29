@@ -20,7 +20,7 @@ export function useCollections() {
     storage.saveCollections(newCollections);
   };
 
-  const createCollection = (title: string, description: string, color: string, folderId?: string): Collection => {
+  const createCollection = (title: string, description: string, color: string): Collection => {
     const newCollection: Collection = {
       id: crypto.randomUUID(),
       title,
@@ -29,7 +29,6 @@ export function useCollections() {
       updatedAt: new Date(),
       cards: [],
       color,
-      folderIds: folderId ? [folderId] : [],
     };
 
     const newCollections = [...collections, newCollection];
@@ -48,34 +47,6 @@ export function useCollections() {
 
   const deleteCollection = (id: string) => {
     const newCollections = collections.filter(collection => collection.id !== id);
-    saveCollections(newCollections);
-  };
-
-  const addCollectionToFolder = (collectionId: string, folderId: string) => {
-    const newCollections = collections.map(collection =>
-      collection.id === collectionId
-        ? { 
-            ...collection, 
-            folderIds: collection.folderIds.includes(folderId) 
-              ? collection.folderIds 
-              : [...collection.folderIds, folderId],
-            updatedAt: new Date() 
-          }
-        : collection
-    );
-    saveCollections(newCollections);
-  };
-
-  const removeCollectionFromFolder = (collectionId: string, folderId: string) => {
-    const newCollections = collections.map(collection =>
-      collection.id === collectionId
-        ? { 
-            ...collection, 
-            folderIds: collection.folderIds.filter(id => id !== folderId),
-            updatedAt: new Date() 
-          }
-        : collection
-    );
     saveCollections(newCollections);
   };
 
@@ -141,8 +112,6 @@ export function useCollections() {
     createCollection,
     updateCollection,
     deleteCollection,
-    addCollectionToFolder,
-    removeCollectionFromFolder,
     addCard,
     updateCard,
     deleteCard,

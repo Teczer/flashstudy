@@ -1,8 +1,7 @@
-import { Collection, Card, PracticeSession, Folder } from '@/types';
+import { Collection, Card, PracticeSession } from '@/types';
 
 const COLLECTIONS_KEY = 'flashstudy_collections';
 const SESSIONS_KEY = 'flashstudy_sessions';
-const FOLDERS_KEY = 'flashstudy_folders';
 
 export const storage = {
   getCollections(): Collection[] {
@@ -15,8 +14,6 @@ export const storage = {
         ...collection,
         createdAt: new Date(collection.createdAt),
         updatedAt: new Date(collection.updatedAt),
-        // Handle migration from single folderId to folderIds array
-        folderIds: collection.folderIds || (collection.folderId ? [collection.folderId] : []),
         cards: collection.cards.map((card: any) => ({
           ...card,
           createdAt: new Date(card.createdAt),
@@ -35,33 +32,6 @@ export const storage = {
       localStorage.setItem(COLLECTIONS_KEY, JSON.stringify(collections));
     } catch (error) {
       console.error('Error saving collections:', error);
-    }
-  },
-
-  getFolders(): Folder[] {
-    if (typeof window === 'undefined') return [];
-    try {
-      const data = localStorage.getItem(FOLDERS_KEY);
-      if (!data) return [];
-      const folders = JSON.parse(data);
-      return folders.map((folder: any) => ({
-        ...folder,
-        createdAt: new Date(folder.createdAt),
-        updatedAt: new Date(folder.updatedAt),
-        order: folder.order || 0, // Ensure order exists for legacy data
-      }));
-    } catch (error) {
-      console.error('Error loading folders:', error);
-      return [];
-    }
-  },
-
-  saveFolders(folders: Folder[]): void {
-    if (typeof window === 'undefined') return;
-    try {
-      localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders));
-    } catch (error) {
-      console.error('Error saving folders:', error);
     }
   },
 
