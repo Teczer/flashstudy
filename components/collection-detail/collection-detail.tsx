@@ -122,12 +122,15 @@ export function CollectionDetail({ collection: initialCollection, onBack, onPrac
               <div className="flex items-start space-x-3">
                 <div 
                   className="animate-ping size-3 rounded-full mt-1 flex-shrink-0"
-                  style={{ backgroundColor: currentCollection.color }}
+              
                 />
 
                 <span class="relative flex size-3">
   <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
-  <span class="relative inline-flex size-3 rounded-full bg-sky-500"></span>
+  <span class="relative inline-flex size-3 rounded-full"
+    
+        style={{ backgroundColor: currentCollection.color }}
+    ></span>
 </span>
                 <div className="min-w-0 flex-1">
                   <h1 className="text-2xl sm:text-3xl font-bold mb-1 break-words">
