@@ -121,7 +121,7 @@ export function CollectionDetail({ collection: initialCollection, onBack, onPrac
               </Button>
               <div className="flex items-start space-x-3">
                 <div 
-                  className="animate-pulse w-5 h-5 rounded-full mt-1 flex-shrink-0"
+                  className="animate-ping w-5 h-5 rounded-full mt-1 flex-shrink-0"
                   style={{ backgroundColor: currentCollection.color }}
                 />
                 <div className="min-w-0 flex-1">
