@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Collection, COLLECTION_COLORS } from '@/types';
 import {
   Dialog,
@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Check } from 'lucide-react';
 
 interface CollectionFormProps {
   collection?: Collection;
@@ -28,17 +29,25 @@ export function CollectionForm({
   onOpenChange,
   onSave,
 }: CollectionFormProps) {
-  const [title, setTitle] = useState(collection?.title || '');
-  const [description, setDescription] = useState(collection?.description || '');
-  const [selectedColor, setSelectedColor] = useState(
-    collection?.color || COLLECTION_COLORS[0]
-  );
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [selectedColor, setSelectedColor] = useState(COLLECTION_COLORS[0]);
+
+  // Reset form when collection changes or dialog opens
+  useEffect(() => {
+    if (open) {
+      setTitle(collection?.title || '');
+      setDescription(collection?.description || '');
+      setSelectedColor(collection?.color || COLLECTION_COLORS[0]);
+    }
+  }, [collection, open]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim()) {
       onSave(title.trim(), description.trim(), selectedColor);
       if (!collection) {
+        // Only reset for new collections
         setTitle('');
         setDescription('');
         setSelectedColor(COLLECTION_COLORS[0]);
@@ -47,11 +56,21 @@ export function CollectionForm({
     }
   };
 
+  const handleCancel = () => {
+    onOpenChange(false);
+    // Reset form to original values
+    if (collection) {
+      setTitle(collection.title);
+      setDescription(collection.description || '');
+      setSelectedColor(collection.color);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="text-xl">
             {collection ? 'Edit Collection' : 'Create New Collection'}
           </DialogTitle>
           <DialogDescription>
@@ -61,56 +80,76 @@ export function CollectionForm({
           </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title" className="text-sm font-medium">
+              Collection Title *
+            </Label>
             <Input
               id="title"
-              placeholder="e.g., Mathematics, Spanish Vocabulary"
+              placeholder="e.g., Mathematics, Spanish Vocabulary, History Facts"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
+              className="text-base"
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="description">Description (optional)</Label>
+            <Label htmlFor="description" className="text-sm font-medium">
+              Description <span className="text-muted-foreground">(optional)</span>
+            </Label>
             <Textarea
               id="description"
               placeholder="Brief description of this collection..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
+              className="text-base resize-none"
             />
           </div>
           
-          <div className="space-y-2">
-            <Label>Color Theme</Label>
-            <div className="flex flex-wrap gap-2">
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">Color Theme</Label>
+            <div className="grid grid-cols-8 gap-3">
               {COLLECTION_COLORS.map((color) => (
                 <button
                   key={color}
                   type="button"
                   onClick={() => setSelectedColor(color)}
-                  className={`w-8 h-8 rounded-full transition-all duration-200 ${
+                  className={`relative w-10 h-10 rounded-full transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background ${
                     selectedColor === color
                       ? 'ring-2 ring-offset-2 ring-offset-background scale-110'
-                      : 'hover:scale-105'
+                      : ''
                   }`}
                   style={{ 
                     backgroundColor: color,
                     '--tw-ring-color': color 
                   } as React.CSSProperties}
-                />
+                  title={`Select ${color}`}
+                >
+                  {selectedColor === color && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Check className="h-5 w-5 text-white drop-shadow-sm" />
+                    </div>
+                  )}
+                </button>
               ))}
             </div>
+            <p className="text-xs text-muted-foreground">
+              Choose a color theme for your collection
+            </p>
           </div>
           
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          <DialogFooter className="gap-2">
+            <Button type="button" variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button type="submit" disabled={!title.trim()}>
+            <Button 
+              type="submit" 
+              disabled={!title.trim()}
+              className="min-w-[100px]"
+            >
               {collection ? 'Update' : 'Create'} Collection
             </Button>
           </DialogFooter>

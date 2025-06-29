@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Plus, Search } from 'lucide-react';
 import { useCollections } from '@/hooks/use-collections';
+import { toast } from 'sonner';
 
 interface CollectionsGridProps {
   onPractice: (collection: Collection) => void;
@@ -67,8 +68,14 @@ export function CollectionsGrid({
     if (editingCollection) {
       updateCollection(editingCollection.id, { title, description, color });
       setEditingCollection(undefined);
+      toast.success('Collection updated!', {
+        description: `"${title}" has been updated successfully.`,
+      });
     } else {
       createCollection(title, description, color);
+      toast.success('Collection created!', {
+        description: `"${title}" has been created successfully.`,
+      });
     }
   };
 
@@ -78,12 +85,16 @@ export function CollectionsGrid({
   };
 
   const handleDelete = (id: string) => {
+    const collection = collections.find(c => c.id === id);
     if (
       confirm(
-        'Are you sure you want to delete this collection? This action cannot be undone.'
+        `Are you sure you want to delete "${collection?.title}"? This action cannot be undone and will delete all ${collection?.cards.length || 0} cards in this collection.`
       )
     ) {
       deleteCollection(id);
+      toast.success('Collection deleted!', {
+        description: `"${collection?.title}" has been deleted.`,
+      });
     }
   };
 
