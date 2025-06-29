@@ -28,7 +28,7 @@ const languageFlags: Record<Locale, string> = {
 };
 
 export function LanguageSelector() {
-  const { locale } = useTranslation();
+  const { language } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
@@ -51,7 +51,7 @@ export function LanguageSelector() {
         >
           <Languages className="h-4 w-4" />
           <span className="text-sm font-medium">
-            {languageFlags[locale]} {languageNames[locale]}
+            {languageFlags[language]} {languageNames[language]}
           </span>
         </Button>
       </DropdownMenuTrigger>
@@ -66,7 +66,7 @@ export function LanguageSelector() {
               <span>{languageFlags[lang]}</span>
               <span>{languageNames[lang]}</span>
             </div>
-            {locale === lang && <Check className="h-4 w-4" />}
+            {language === lang && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
