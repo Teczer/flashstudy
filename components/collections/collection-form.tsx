@@ -79,7 +79,7 @@ export function CollectionForm({
               : 'Create a new flashcard collection to organize your study materials.'}
           </DialogDescription>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="title" className="text-sm font-medium">
@@ -94,10 +94,11 @@ export function CollectionForm({
               className="text-base"
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="description" className="text-sm font-medium">
-              Description <span className="text-muted-foreground">(optional)</span>
+              Description{' '}
+              <span className="text-muted-foreground">(optional)</span>
             </Label>
             <Textarea
               id="description"
@@ -108,7 +109,7 @@ export function CollectionForm({
               className="text-base resize-none"
             />
           </div>
-          
+
           <div className="space-y-3">
             <Label className="text-sm font-medium">Color Theme</Label>
             <div className="grid grid-cols-8 gap-3">
@@ -122,10 +123,12 @@ export function CollectionForm({
                       ? 'ring-2 ring-offset-2 ring-offset-background scale-110'
                       : ''
                   }`}
-                  style={{ 
-                    backgroundColor: color,
-                    '--tw-ring-color': color 
-                  } as React.CSSProperties}
+                  style={
+                    {
+                      backgroundColor: color,
+                      '--tw-ring-color': color,
+                    } as React.CSSProperties
+                  }
                   title={`Select ${color}`}
                 >
                   {selectedColor === color && (
@@ -140,13 +143,13 @@ export function CollectionForm({
               Choose a color theme for your collection
             </p>
           </div>
-          
+
           <DialogFooter className="gap-2">
             <Button type="button" variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={!title.trim()}
               className="min-w-[100px]"
             >

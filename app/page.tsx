@@ -16,10 +16,7 @@ export default function Home() {
   const [selectedCollection, setSelectedCollection] =
     useState<Collection | null>(null);
 
-  const {
-    collections,
-    loading: collectionsLoading,
-  } = useCollections();
+  const { collections, loading: collectionsLoading } = useCollections();
 
   // Memoize handlers to prevent recreation
   const handleViewCollection = useCallback((collection: Collection) => {
