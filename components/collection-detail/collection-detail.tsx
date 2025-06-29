@@ -35,6 +35,7 @@ import {
 import { CardForm } from '@/components/cards/card-form';
 import { AIQuestionGenerator } from '@/components/cards/ai-question-generator';
 import { useCollections } from '@/hooks/use-collections';
+import { useTranslation } from '@/lib/language-context';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -62,6 +63,7 @@ export function CollectionDetail({
   onBack,
   onPractice,
 }: CollectionDetailProps) {
+  const { t } = useTranslation();
   const { collections, addCard, addGeneratedCards, updateCard, deleteCard } = useCollections();
   const [searchTerm, setSearchTerm] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -81,13 +83,13 @@ export function CollectionDetail({
     if (editingCard) {
       updateCard(currentCollection.id, editingCard.id, { question, answer });
       setEditingCard(undefined);
-      toast.success('Card updated successfully!', {
-        description: 'Your flashcard has been updated.',
+      toast.success(t('cards.updated'), {
+        description: t('cards.updatedDescription'),
       });
     } else {
       addCard(currentCollection.id, question, answer, false);
-      toast.success('Card added successfully!', {
-        description: 'Your new flashcard has been added to the collection.',
+      toast.success(t('cards.added'), {
+        description: t('cards.addedDescription'),
       });
     }
   };
@@ -102,10 +104,10 @@ export function CollectionDetail({
   };
 
   const handleDeleteCard = (cardId: string) => {
-    if (confirm('Are you sure you want to delete this card?')) {
+    if (confirm(t('cards.deleteConfirm'))) {
       deleteCard(currentCollection.id, cardId);
-      toast.success('Card deleted successfully!', {
-        description: 'The flashcard has been removed from your collection.',
+      toast.success(t('cards.deleted'), {
+        description: t('cards.deletedDescription'),
       });
     }
   };
@@ -135,7 +137,7 @@ export function CollectionDetail({
                 className="mt-1"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
+                {t('common.back')}
               </Button>
               <div className="flex items-start space-x-3">
                 <span className="relative flex size-3">
@@ -173,7 +175,7 @@ export function CollectionDetail({
                 }}
               >
                 <Play className="mr-2 h-4 w-4" />
-                Practice
+                {t('common.practice')}
               </Button>
             </div>
           </div>
@@ -183,19 +185,19 @@ export function CollectionDetail({
               <div className="flex items-center space-x-2">
                 <Calendar className="h-4 w-4 flex-shrink-0" />
                 <span>
-                  Updated{' '}
+                  {t('common.updated')}{' '}
                   {formatDistanceToNow(currentCollection.updatedAt, {
                     addSuffix: true,
                   })}
                 </span>
               </div>
               <Badge variant="secondary" className="flex-shrink-0">
-                {currentCollection.cards.length} cards
+                {t('common.cardsCount', { count: currentCollection.cards.length })}
               </Badge>
               {currentCollection.cards.some(card => card.isGenerated) && (
                 <Badge variant="outline" className="flex-shrink-0 border-purple-200 text-purple-700 dark:border-purple-800 dark:text-purple-300">
                   <Sparkles className="h-3 w-3 mr-1" />
-                  AI Generated
+                  {t('common.aiGenerated')}
                 </Badge>
               )}
             </div>
@@ -218,7 +220,7 @@ export function CollectionDetail({
           <div className="relative flex-1 max-w-md w-full lg:w-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Search cards..."
+              placeholder={t('cards.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -231,7 +233,7 @@ export function CollectionDetail({
             className="w-full lg:w-auto"
           >
             <Plus className="mr-2 h-4 w-4" />
-            Add Card Manually
+            {t('cards.addManually')}
           </Button>
         </div>
 
@@ -249,12 +251,12 @@ export function CollectionDetail({
                 />
               </div>
               <h3 className="text-xl font-semibold mb-3">
-                {searchTerm ? 'No cards found' : 'No cards yet'}
+                {searchTerm ? t('cards.noResults') : t('cards.empty')}
               </h3>
               <p className="text-muted-foreground mb-6 leading-relaxed">
                 {searchTerm
-                  ? "Try adjusting your search terms to find what you're looking for."
-                  : 'Add your first flashcard manually or generate them with AI.'}
+                  ? t('cards.noResultsDescription')
+                  : t('cards.emptyDescription')}
               </p>
               {!searchTerm && (
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -265,7 +267,7 @@ export function CollectionDetail({
                     className="px-8"
                   >
                     <Plus className="mr-2 h-5 w-5" />
-                    Add Manually
+                    {t('cards.addManually')}
                   </Button>
                   <Button
                     size="lg"
@@ -280,7 +282,7 @@ export function CollectionDetail({
                     }}
                   >
                     <Sparkles className="mr-2 h-5 w-5" />
-                    Generate with AI
+                    {t('cards.generateWithAI')}
                   </Button>
                 </div>
               )}
@@ -292,12 +294,12 @@ export function CollectionDetail({
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="min-w-[200px]">Question</TableHead>
-                    <TableHead className="min-w-[200px]">Answer</TableHead>
+                    <TableHead className="min-w-[200px]">{t('cards.question')}</TableHead>
+                    <TableHead className="min-w-[200px]">{t('cards.answer')}</TableHead>
                     <TableHead className="w-32 text-center">
-                      Success Rate
+                      {t('cards.successRate')}
                     </TableHead>
-                    <TableHead className="w-32 text-center">Attempts</TableHead>
+                    <TableHead className="w-32 text-center">{t('cards.attempts')}</TableHead>
                     <TableHead className="w-20"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -342,7 +344,7 @@ export function CollectionDetail({
                               )}
                             </div>
                           ) : (
-                            <span className="text-muted-foreground">New</span>
+                            <span className="text-muted-foreground">{t('common.new')}</span>
                           )}
                         </TableCell>
                         <TableCell className="text-center">
@@ -366,14 +368,14 @@ export function CollectionDetail({
                                 onClick={() => handleEditCard(card)}
                               >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Edit
+                                {t('common.edit')}
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={() => handleDeleteCard(card.id)}
                                 className="text-destructive"
                               >
                                 <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
+                                {t('common.delete')}
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>

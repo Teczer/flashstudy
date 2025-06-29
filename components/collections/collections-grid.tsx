@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Plus, Search } from 'lucide-react';
 import { useCollections } from '@/hooks/use-collections';
+import { useTranslation } from '@/lib/language-context';
 import { toast } from 'sonner';
 
 interface CollectionsGridProps {
@@ -26,6 +27,7 @@ export function CollectionsGrid({
   onPractice,
   onViewCollection,
 }: CollectionsGridProps) {
+  const { t } = useTranslation();
   const {
     collections,
     loading,
@@ -68,13 +70,13 @@ export function CollectionsGrid({
     if (editingCollection) {
       updateCollection(editingCollection.id, { title, description, color });
       setEditingCollection(undefined);
-      toast.success('Collection updated!', {
-        description: `"${title}" has been updated successfully.`,
+      toast.success(t('collections.updated'), {
+        description: t('collections.updatedDescription', { title }),
       });
     } else {
       createCollection(title, description, color);
-      toast.success('Collection created!', {
-        description: `"${title}" has been created successfully.`,
+      toast.success(t('collections.created'), {
+        description: t('collections.createdDescription', { title }),
       });
     }
   };
@@ -88,12 +90,17 @@ export function CollectionsGrid({
     const collection = collections.find((c) => c.id === id);
     if (
       confirm(
-        `Are you sure you want to delete "${collection?.title}"? This action cannot be undone and will delete all ${collection?.cards.length || 0} cards in this collection.`
+        t('collections.deleteConfirm', {
+          title: collection?.title,
+          count: collection?.cards.length || 0,
+        })
       )
     ) {
       deleteCollection(id);
-      toast.success('Collection deleted!', {
-        description: `"${collection?.title}" has been deleted.`,
+      toast.success(t('collections.deleted'), {
+        description: t('collections.deletedDescription', {
+          title: collection?.title,
+        }),
       });
     }
   };
@@ -114,7 +121,7 @@ export function CollectionsGrid({
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Search collections..."
+              placeholder={t('collections.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -131,9 +138,9 @@ export function CollectionsGrid({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="updated">Recently Updated</SelectItem>
-              <SelectItem value="created">Recently Created</SelectItem>
-              <SelectItem value="title">Title A-Z</SelectItem>
+              <SelectItem value="updated">{t('collections.sortUpdated')}</SelectItem>
+              <SelectItem value="created">{t('collections.sortCreated')}</SelectItem>
+              <SelectItem value="title">{t('collections.sortTitle')}</SelectItem>
             </SelectContent>
           </Select>
 
@@ -142,7 +149,7 @@ export function CollectionsGrid({
             className="flex items-center space-x-2"
           >
             <Plus className="h-4 w-4" />
-            <span>New Collection</span>
+            <span>{t('collections.newCollection')}</span>
           </Button>
         </div>
       </div>
@@ -155,12 +162,12 @@ export function CollectionsGrid({
               <Plus className="h-8 w-8 text-primary" />
             </div>
             <h3 className="text-xl font-semibold mb-3">
-              {searchTerm ? 'No collections found' : 'No collections yet'}
+              {searchTerm ? t('collections.noResults') : t('collections.empty')}
             </h3>
             <p className="text-muted-foreground mb-6 leading-relaxed">
               {searchTerm
-                ? "Try adjusting your search terms to find what you're looking for."
-                : 'Create your first flashcard collection to get started.'}
+                ? t('collections.noResultsDescription')
+                : t('collections.emptyDescription')}
             </p>
             {!searchTerm && (
               <Button
@@ -169,7 +176,7 @@ export function CollectionsGrid({
                 className="px-8"
               >
                 <Plus className="mr-2 h-5 w-5" />
-                Create Collection
+                {t('collections.createCollection')}
               </Button>
             )}
           </div>

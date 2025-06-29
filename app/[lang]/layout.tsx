@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
+import { Locale } from '@/i18n.config';
+import { LanguageProvider } from '@/lib/language-context';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -12,17 +14,23 @@ export const metadata: Metadata = {
     'Create, organize, and practice with intelligent flashcards that adapt to your learning progress.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ lang: Locale }>;
 }) {
+  const { lang } = await params;
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider defaultTheme="system" storageKey="flashstudy-theme">
-          {children}
-          <Toaster />
+          <LanguageProvider initialLanguage={lang}>
+            {children}
+            <Toaster />
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -18,6 +18,7 @@ import { Sparkles, Loader2, AlertCircle, Info } from 'lucide-react';
 import { generateQuestions, validateApiKey } from '@/lib/openai';
 import { GeneratedQuestion } from '@/types';
 import { toast } from 'sonner';
+import { useTranslation } from '@/lib/language-context';
 
 interface AIQuestionGeneratorProps {
   collectionTitle?: string;
@@ -28,6 +29,7 @@ export function AIQuestionGenerator({
   collectionTitle,
   onQuestionsGenerated,
 }: AIQuestionGeneratorProps) {
+  const { t } = useTranslation();
   const [prompt, setPrompt] = useState('');
   const [questionCount, setQuestionCount] = useState('10');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -35,15 +37,15 @@ export function AIQuestionGenerator({
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
-      toast.error('Please enter a prompt', {
-        description: 'Describe what type of questions you want to generate.',
+      toast.error(t('ai.errors.noPrompt'), {
+        description: t('ai.errors.noPromptDescription'),
       });
       return;
     }
 
     if (!hasApiKey) {
-      toast.error('OpenAI API key required', {
-        description: 'Please configure your OpenAI API key to use this feature.',
+      toast.error(t('ai.errors.noApiKey'), {
+        description: t('ai.errors.noApiKeyDescription'),
       });
       return;
     }
@@ -59,16 +61,16 @@ export function AIQuestionGenerator({
 
       onQuestionsGenerated(questions);
       
-      toast.success('Questions generated successfully!', {
-        description: `Generated ${questions.length} questions using AI.`,
+      toast.success(t('ai.success.generated'), {
+        description: t('ai.success.generatedDescription', { count: questions.length }),
       });
 
       // Clear the form
       setPrompt('');
     } catch (error) {
       console.error('Generation error:', error);
-      toast.error('Failed to generate questions', {
-        description: error instanceof Error ? error.message : 'Please try again.',
+      toast.error(t('ai.errors.failed'), {
+        description: error instanceof Error ? error.message : t('ai.errors.tryAgain'),
       });
     } finally {
       setIsGenerating(false);
@@ -76,7 +78,7 @@ export function AIQuestionGenerator({
   };
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-purple-50/50 to-blue-50/50 dark:from-purple-950/20 dark:to-blue-950/20 border-purple-200/50 dark:border-purple-800/50">
+    <Card className="p-6 bg-gradient-to-br from-purple-50/50 to-blue-50/50 dark:from-purple-950/20 dark:to-blue-950/20 border-purple-200/50 dark:border-purple-800/50" data-ai-generator>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center space-x-3">
@@ -85,10 +87,10 @@ export function AIQuestionGenerator({
           </div>
           <div>
             <h3 className="text-lg font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              AI Question Generator
+              {t('ai.title')}
             </h3>
             <p className="text-sm text-muted-foreground">
-              Generate flashcards automatically using ChatGPT
+              {t('ai.description')}
             </p>
           </div>
         </div>
@@ -101,10 +103,10 @@ export function AIQuestionGenerator({
             <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
             <div className="space-y-2">
               <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
-                OpenAI API Key Required
+                {t('ai.apiKey.required')}
               </p>
               <p className="text-sm text-amber-700 dark:text-amber-300">
-                To use AI question generation, please add your OpenAI API key to the environment variable{' '}
+                {t('ai.apiKey.description')}{' '}
                 <code className="px-1 py-0.5 bg-amber-100 dark:bg-amber-900/50 rounded text-xs">
                   NEXT_PUBLIC_OPENAI_API_KEY
                 </code>
@@ -118,11 +120,11 @@ export function AIQuestionGenerator({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="sm:col-span-2 space-y-2">
               <Label htmlFor="prompt" className="text-sm font-medium">
-                Question Topic/Prompt *
+                {t('ai.form.prompt')} *
               </Label>
               <Textarea
                 id="prompt"
-                placeholder="e.g., Basic algebra equations, French vocabulary for beginners, World War 2 key events, JavaScript fundamentals..."
+                placeholder={t('ai.form.promptPlaceholder')}
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 rows={3}
@@ -133,7 +135,7 @@ export function AIQuestionGenerator({
 
             <div className="space-y-2">
               <Label htmlFor="count" className="text-sm font-medium">
-                Number of Questions
+                {t('ai.form.count')}
               </Label>
               <Select
                 value={questionCount}
@@ -146,7 +148,7 @@ export function AIQuestionGenerator({
                 <SelectContent>
                   {Array.from({ length: 50 }, (_, i) => i + 1).map((num) => (
                     <SelectItem key={num} value={num.toString()}>
-                      {num} question{num !== 1 ? 's' : ''}
+                      {t('ai.form.questionCount', { count: num })}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -158,11 +160,11 @@ export function AIQuestionGenerator({
           <div className="flex items-start space-x-3 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50 rounded-lg">
             <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-blue-700 dark:text-blue-300">
-              <p className="font-medium mb-1">Tips for better results:</p>
+              <p className="font-medium mb-1">{t('ai.tips.title')}</p>
               <ul className="space-y-1 text-xs">
-                <li>• Be specific about the topic and difficulty level</li>
-                <li>• Include context like "for beginners" or "advanced level"</li>
-                <li>• Mention the format you prefer (multiple choice, short answer, etc.)</li>
+                <li>• {t('ai.tips.specific')}</li>
+                <li>• {t('ai.tips.context')}</li>
+                <li>• {t('ai.tips.format')}</li>
               </ul>
             </div>
           </div>
@@ -177,12 +179,12 @@ export function AIQuestionGenerator({
             {isGenerating ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating {questionCount} questions...
+                {t('ai.generating', { count: questionCount })}
               </>
             ) : (
               <>
                 <Sparkles className="mr-2 h-4 w-4" />
-                Generate with ChatGPT
+                {t('ai.generate')}
               </>
             )}
           </Button>
