@@ -20,6 +20,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs';
+import {
   ArrowLeft,
   Plus,
   Play,
@@ -31,9 +37,11 @@ import {
   TrendingUp,
   TrendingDown,
   Sparkles,
+  Camera,
 } from 'lucide-react';
 import { CardForm } from '@/components/cards/card-form';
 import { AIQuestionGenerator } from '@/components/cards/ai-question-generator';
+import { ImageToFlashcards } from '@/components/cards/image-to-flashcards';
 import { useCollections } from '@/hooks/use-collections';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
@@ -81,13 +89,13 @@ export function CollectionDetail({
     if (editingCard) {
       updateCard(currentCollection.id, editingCard.id, { question, answer });
       setEditingCard(undefined);
-      toast.success('Card updated successfully!', {
-        description: 'Your flashcard has been updated.',
+      toast.success('Carte mise à jour avec succès!', {
+        description: 'Votre carte mémoire a été mise à jour.',
       });
     } else {
       addCard(currentCollection.id, question, answer, false);
-      toast.success('Card added successfully!', {
-        description: 'Your new flashcard has been added to the collection.',
+      toast.success('Carte ajoutée avec succès!', {
+        description: 'Votre nouvelle carte mémoire a été ajoutée à la collection.',
       });
     }
   };
@@ -102,10 +110,10 @@ export function CollectionDetail({
   };
 
   const handleDeleteCard = (cardId: string) => {
-    if (confirm('Are you sure you want to delete this card?')) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette carte ?')) {
       deleteCard(currentCollection.id, cardId);
-      toast.success('Card deleted successfully!', {
-        description: 'The flashcard has been removed from your collection.',
+      toast.success('Carte supprimée avec succès!', {
+        description: 'La carte mémoire a été supprimée de votre collection.',
       });
     }
   };
@@ -135,7 +143,7 @@ export function CollectionDetail({
                 className="mt-1"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
+                Retour
               </Button>
               <div className="flex items-start space-x-3">
                 <span className="relative flex size-3">
@@ -173,7 +181,7 @@ export function CollectionDetail({
                 }}
               >
                 <Play className="mr-2 h-4 w-4" />
-                Practice
+                Pratiquer
               </Button>
             </div>
           </div>
@@ -183,19 +191,20 @@ export function CollectionDetail({
               <div className="flex items-center space-x-2">
                 <Calendar className="h-4 w-4 flex-shrink-0" />
                 <span>
-                  Updated{' '}
+                  Mis à jour{' '}
                   {formatDistanceToNow(currentCollection.updatedAt, {
                     addSuffix: true,
+                    locale: { code: 'fr' },
                   })}
                 </span>
               </div>
               <Badge variant="secondary" className="flex-shrink-0">
-                {currentCollection.cards.length} cards
+                {currentCollection.cards.length} cartes
               </Badge>
               {currentCollection.cards.some(card => card.isGenerated) && (
                 <Badge variant="outline" className="flex-shrink-0 border-purple-200 text-purple-700 dark:border-purple-800 dark:text-purple-300">
                   <Sparkles className="h-3 w-3 mr-1" />
-                  AI Generated
+                  IA Générée
                 </Badge>
               )}
             </div>
@@ -205,34 +214,64 @@ export function CollectionDetail({
 
       {/* Content */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl">
-        {/* AI Question Generator */}
+        {/* Card Generation Tabs */}
         <div className="mb-8">
-          <AIQuestionGenerator
-            collectionTitle={currentCollection.title}
-            onQuestionsGenerated={handleGeneratedQuestions}
-          />
+          <Tabs defaultValue="ai-text" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="ai-text" className="flex items-center space-x-2">
+                <Sparkles className="h-4 w-4" />
+                <span>IA Textuelle</span>
+              </TabsTrigger>
+              <TabsTrigger value="ai-image" className="flex items-center space-x-2">
+                <Camera className="h-4 w-4" />
+                <span>IA Images</span>
+              </TabsTrigger>
+              <TabsTrigger value="manual" className="flex items-center space-x-2">
+                <Plus className="h-4 w-4" />
+                <span>Manuel</span>
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="ai-text" className="mt-6">
+              <AIQuestionGenerator
+                collectionTitle={currentCollection.title}
+                onQuestionsGenerated={handleGeneratedQuestions}
+              />
+            </TabsContent>
+
+            <TabsContent value="ai-image" className="mt-6">
+              <ImageToFlashcards
+                collectionTitle={currentCollection.title}
+                onQuestionsGenerated={handleGeneratedQuestions}
+              />
+            </TabsContent>
+
+            <TabsContent value="manual" className="mt-6">
+              <div className="flex justify-center">
+                <Button
+                  onClick={() => setIsFormOpen(true)}
+                  size="lg"
+                  className="px-8"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Ajouter une carte manuellement
+                </Button>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
 
-        {/* Actions Bar */}
+        {/* Search Bar */}
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-8">
           <div className="relative flex-1 max-w-md w-full lg:w-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Search cards..."
+              placeholder="Rechercher des cartes..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
             />
           </div>
-
-          <Button
-            onClick={() => setIsFormOpen(true)}
-            size="lg"
-            className="w-full lg:w-auto"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Add Card Manually
-          </Button>
         </div>
 
         {/* Cards Table */}
@@ -249,12 +288,12 @@ export function CollectionDetail({
                 />
               </div>
               <h3 className="text-xl font-semibold mb-3">
-                {searchTerm ? 'No cards found' : 'No cards yet'}
+                {searchTerm ? 'Aucune carte trouvée' : 'Aucune carte pour le moment'}
               </h3>
               <p className="text-muted-foreground mb-6 leading-relaxed">
                 {searchTerm
-                  ? "Try adjusting your search terms to find what you're looking for."
-                  : 'Add your first flashcard manually or generate them with AI.'}
+                  ? "Essayez d'ajuster vos termes de recherche pour trouver ce que vous cherchez."
+                  : 'Ajoutez votre première carte mémoire manuellement ou générez-les avec l\'IA.'}
               </p>
               {!searchTerm && (
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -265,7 +304,7 @@ export function CollectionDetail({
                     className="px-8"
                   >
                     <Plus className="mr-2 h-5 w-5" />
-                    Add Manually
+                    Ajouter manuellement
                   </Button>
                   <Button
                     size="lg"
@@ -274,13 +313,9 @@ export function CollectionDetail({
                       backgroundColor: currentCollection.color,
                       color: practiceButtonTextColor,
                     }}
-                    onClick={() => {
-                      const generator = document.querySelector('[data-ai-generator]');
-                      generator?.scrollIntoView({ behavior: 'smooth' });
-                    }}
                   >
                     <Sparkles className="mr-2 h-5 w-5" />
-                    Generate with AI
+                    Générer avec l'IA
                   </Button>
                 </div>
               )}
@@ -293,11 +328,11 @@ export function CollectionDetail({
                 <TableHeader>
                   <TableRow>
                     <TableHead className="min-w-[200px]">Question</TableHead>
-                    <TableHead className="min-w-[200px]">Answer</TableHead>
+                    <TableHead className="min-w-[200px]">Réponse</TableHead>
                     <TableHead className="w-32 text-center">
-                      Success Rate
+                      Taux de réussite
                     </TableHead>
-                    <TableHead className="w-32 text-center">Attempts</TableHead>
+                    <TableHead className="w-32 text-center">Tentatives</TableHead>
                     <TableHead className="w-20"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -342,7 +377,7 @@ export function CollectionDetail({
                               )}
                             </div>
                           ) : (
-                            <span className="text-muted-foreground">New</span>
+                            <span className="text-muted-foreground">Nouveau</span>
                           )}
                         </TableCell>
                         <TableCell className="text-center">
@@ -366,14 +401,14 @@ export function CollectionDetail({
                                 onClick={() => handleEditCard(card)}
                               >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Edit
+                                Modifier
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={() => handleDeleteCard(card.id)}
                                 className="text-destructive"
                               >
                                 <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
+                                Supprimer
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
