@@ -9,7 +9,11 @@ function getLocale(request: NextRequest): string | undefined {
   request.headers.forEach((value, key) => (negotiatorHeaders[key] = value));
   const locales: string[] = i18n.locales;
   const languages = new Negotiator({ headers: negotiatorHeaders }).languages();
-  return matchLocale(languages, locales, i18n.defaultLocale);
+  
+  // Filter out invalid language tags like '*' before passing to matchLocale
+  const validLanguages = languages.filter(lang => lang !== '*' && /^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$/.test(lang));
+  
+  return matchLocale(validLanguages, locales, i18n.defaultLocale);
 }
 
 export function middleware(request: NextRequest) {
