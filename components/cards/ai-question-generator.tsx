@@ -35,15 +35,15 @@ export function AIQuestionGenerator({
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
-      toast.error('Please enter a prompt', {
-        description: 'Describe what type of questions you want to generate.',
+      toast.error('Veuillez entrer un sujet', {
+        description: 'Décrivez le type de questions que vous souhaitez générer.',
       });
       return;
     }
 
     if (!hasApiKey) {
-      toast.error('OpenAI API key required', {
-        description: 'Please configure your OpenAI API key to use this feature.',
+      toast.error('Clé API OpenAI requise', {
+        description: 'Veuillez configurer votre clé API OpenAI pour utiliser cette fonctionnalité.',
       });
       return;
     }
@@ -59,16 +59,16 @@ export function AIQuestionGenerator({
 
       onQuestionsGenerated(questions);
       
-      toast.success('Questions generated successfully!', {
-        description: `Generated ${questions.length} questions using AI.`,
+      toast.success('Questions générées avec succès!', {
+        description: `${questions.length} questions générées avec l'IA.`,
       });
 
       // Clear the form
       setPrompt('');
     } catch (error) {
       console.error('Generation error:', error);
-      toast.error('Failed to generate questions', {
-        description: error instanceof Error ? error.message : 'Please try again.',
+      toast.error('Échec de la génération des questions', {
+        description: error instanceof Error ? error.message : 'Veuillez réessayer.',
       });
     } finally {
       setIsGenerating(false);
@@ -76,7 +76,10 @@ export function AIQuestionGenerator({
   };
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-purple-50/50 to-blue-50/50 dark:from-purple-950/20 dark:to-blue-950/20 border-purple-200/50 dark:border-purple-800/50">
+    <Card 
+      className="p-6 bg-gradient-to-br from-purple-50/50 to-blue-50/50 dark:from-purple-950/20 dark:to-blue-950/20 border-purple-200/50 dark:border-purple-800/50"
+      data-ai-generator
+    >
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center space-x-3">
@@ -85,10 +88,10 @@ export function AIQuestionGenerator({
           </div>
           <div>
             <h3 className="text-lg font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              AI Question Generator
+              Générateur de Questions IA
             </h3>
             <p className="text-sm text-muted-foreground">
-              Generate flashcards automatically using ChatGPT
+              Générez des cartes mémoire automatiquement avec ChatGPT
             </p>
           </div>
         </div>
@@ -101,10 +104,10 @@ export function AIQuestionGenerator({
             <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
             <div className="space-y-2">
               <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
-                OpenAI API Key Required
+                Clé API OpenAI Requise
               </p>
               <p className="text-sm text-amber-700 dark:text-amber-300">
-                To use AI question generation, please add your OpenAI API key to the environment variable{' '}
+                Pour utiliser la génération de questions IA, veuillez ajouter votre clé API OpenAI dans la variable d'environnement{' '}
                 <code className="px-1 py-0.5 bg-amber-100 dark:bg-amber-900/50 rounded text-xs">
                   NEXT_PUBLIC_OPENAI_API_KEY
                 </code>
@@ -118,11 +121,11 @@ export function AIQuestionGenerator({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="sm:col-span-2 space-y-2">
               <Label htmlFor="prompt" className="text-sm font-medium">
-                Question Topic/Prompt *
+                Sujet/Prompt de Question *
               </Label>
               <Textarea
                 id="prompt"
-                placeholder="e.g., Basic algebra equations, French vocabulary for beginners, World War 2 key events, JavaScript fundamentals..."
+                placeholder="ex: Équations d'algèbre de base, Vocabulaire français pour débutants, Événements clés de la Seconde Guerre mondiale, Fondamentaux JavaScript..."
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 rows={3}
@@ -133,7 +136,7 @@ export function AIQuestionGenerator({
 
             <div className="space-y-2">
               <Label htmlFor="count" className="text-sm font-medium">
-                Number of Questions
+                Nombre de Questions
               </Label>
               <Select
                 value={questionCount}
@@ -158,11 +161,11 @@ export function AIQuestionGenerator({
           <div className="flex items-start space-x-3 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50 rounded-lg">
             <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-blue-700 dark:text-blue-300">
-              <p className="font-medium mb-1">Tips for better results:</p>
+              <p className="font-medium mb-1">Conseils pour de meilleurs résultats :</p>
               <ul className="space-y-1 text-xs">
-                <li>• Be specific about the topic and difficulty level</li>
-                <li>• Include context like "for beginners" or "advanced level"</li>
-                <li>• Mention the format you prefer (multiple choice, short answer, etc.)</li>
+                <li>• Soyez spécifique sur le sujet et le niveau de difficulté</li>
+                <li>• Incluez le contexte comme "pour débutants" ou "niveau avancé"</li>
+                <li>• Mentionnez le format préféré (choix multiples, réponse courte, etc.)</li>
               </ul>
             </div>
           </div>
@@ -177,12 +180,12 @@ export function AIQuestionGenerator({
             {isGenerating ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating {questionCount} questions...
+                Génération de {questionCount} questions...
               </>
             ) : (
               <>
                 <Sparkles className="mr-2 h-4 w-4" />
-                Generate with ChatGPT
+                Générer avec ChatGPT
               </>
             )}
           </Button>

@@ -37,11 +37,9 @@ import {
   TrendingUp,
   TrendingDown,
   Sparkles,
-  Camera,
 } from 'lucide-react';
 import { CardForm } from '@/components/cards/card-form';
 import { AIQuestionGenerator } from '@/components/cards/ai-question-generator';
-import { ImageToFlashcards } from '@/components/cards/image-to-flashcards';
 import { useCollections } from '@/hooks/use-collections';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -218,30 +216,19 @@ export function CollectionDetail({
         {/* Card Generation Tabs */}
         <div className="mb-8">
           <Tabs defaultValue="ai-text" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="ai-text" className="flex items-center space-x-2">
                 <Sparkles className="h-4 w-4" />
-                <span>IA Textuelle</span>
-              </TabsTrigger>
-              <TabsTrigger value="ai-image" className="flex items-center space-x-2">
-                <Camera className="h-4 w-4" />
-                <span>IA Images</span>
+                <span>Génération IA</span>
               </TabsTrigger>
               <TabsTrigger value="manual" className="flex items-center space-x-2">
                 <Plus className="h-4 w-4" />
-                <span>Manuel</span>
+                <span>Ajout Manuel</span>
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="ai-text" className="mt-6">
               <AIQuestionGenerator
-                collectionTitle={currentCollection.title}
-                onQuestionsGenerated={handleGeneratedQuestions}
-              />
-            </TabsContent>
-
-            <TabsContent value="ai-image" className="mt-6">
-              <ImageToFlashcards
                 collectionTitle={currentCollection.title}
                 onQuestionsGenerated={handleGeneratedQuestions}
               />
@@ -313,6 +300,15 @@ export function CollectionDetail({
                     style={{
                       backgroundColor: currentCollection.color,
                       color: practiceButtonTextColor,
+                    }}
+                    onClick={() => {
+                      // Scroll to AI generator tab
+                      const aiTab = document.querySelector('[value="ai-text"]') as HTMLElement;
+                      aiTab?.click();
+                      setTimeout(() => {
+                        const generator = document.querySelector('[data-ai-generator]');
+                        generator?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
                     }}
                   >
                     <Sparkles className="mr-2 h-5 w-5" />
