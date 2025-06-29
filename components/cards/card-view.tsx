@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/types';
 import { Card as UICard } from '@/components/ui/card';
+import { Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface CardViewProps {
@@ -50,25 +51,49 @@ export function CardView({
       >
         {/* Front (Question) - Optimized with transform3d */}
         <div
-          className="absolute inset-0 w-full h-full backface-hidden flex flex-col justify-center p-8 bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 dark:from-blue-950/30 dark:via-indigo-950/30 dark:to-blue-900/30 border-2 border-blue-200/50 dark:border-blue-800/50 rounded-xl"
+          className={cn(
+            "absolute inset-0 w-full h-full backface-hidden flex flex-col justify-center p-8 border-2 rounded-xl",
+            card.isGenerated 
+              ? "bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-purple-950/30 dark:via-blue-950/30 dark:to-indigo-900/30 border-purple-200/50 dark:border-purple-800/50"
+              : "bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 dark:from-blue-950/30 dark:via-indigo-950/30 dark:to-blue-900/30 border-blue-200/50 dark:border-blue-800/50"
+          )}
           style={{
             backfaceVisibility: 'hidden',
             transform: 'translate3d(0, 0, 0) rotateY(0deg)',
           }}
         >
           <div className="text-center w-full flex-1 flex flex-col justify-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/50 mb-6 mx-auto">
-              <span className="text-blue-600 dark:text-blue-400 font-bold text-lg">
-                Q
-              </span>
+            <div className={cn(
+              "inline-flex items-center justify-center w-12 h-12 rounded-full mb-6 mx-auto",
+              card.isGenerated
+                ? "bg-purple-100 dark:bg-purple-900/50"
+                : "bg-blue-100 dark:bg-blue-900/50"
+            )}>
+              {card.isGenerated ? (
+                <Sparkles className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+              ) : (
+                <span className="text-blue-600 dark:text-blue-400 font-bold text-lg">
+                  Q
+                </span>
+              )}
             </div>
             <p className="text-xl font-medium text-foreground leading-relaxed mb-8 break-words flex-1 flex items-center justify-center">
               {card.question}
             </p>
           </div>
           <div className="text-center">
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100/80 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800">
-              <span className="text-sm text-blue-700 dark:text-blue-300 font-medium">
+            <div className={cn(
+              "inline-flex items-center px-4 py-2 rounded-full border",
+              card.isGenerated
+                ? "bg-purple-100/80 dark:bg-purple-900/30 border-purple-200 dark:border-purple-800"
+                : "bg-blue-100/80 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800"
+            )}>
+              <span className={cn(
+                "text-sm font-medium",
+                card.isGenerated
+                  ? "text-purple-700 dark:text-purple-300"
+                  : "text-blue-700 dark:text-blue-300"
+              )}>
                 Click to reveal answer
               </span>
             </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Collection, Card } from '@/types';
+import { Collection, Card, GeneratedQuestion } from '@/types';
 import { storage } from '@/lib/storage';
 import { calculateCardWeight } from '@/lib/card-ranking';
 
@@ -59,7 +59,8 @@ export function useCollections() {
   const addCard = (
     collectionId: string,
     question: string,
-    answer: string
+    answer: string,
+    isGenerated: boolean = false
   ): Card => {
     const newCard: Card = {
       id: crypto.randomUUID(),
@@ -70,6 +71,7 @@ export function useCollections() {
       correctCount: 0,
       incorrectCount: 0,
       weight: 1,
+      isGenerated,
     };
 
     const newCollections = collections.map((collection) =>
@@ -84,6 +86,36 @@ export function useCollections() {
 
     saveCollections(newCollections);
     return newCard;
+  };
+
+  const addGeneratedCards = (
+    collectionId: string,
+    questions: GeneratedQuestion[]
+  ): Card[] => {
+    const newCards: Card[] = questions.map((q) => ({
+      id: crypto.randomUUID(),
+      question: q.question,
+      answer: q.answer,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      correctCount: 0,
+      incorrectCount: 0,
+      weight: 1,
+      isGenerated: true,
+    }));
+
+    const newCollections = collections.map((collection) =>
+      collection.id === collectionId
+        ? {
+            ...collection,
+            cards: [...collection.cards, ...newCards],
+            updatedAt: new Date(),
+          }
+        : collection
+    );
+
+    saveCollections(newCollections);
+    return newCards;
   };
 
   const updateCard = (
@@ -132,6 +164,7 @@ export function useCollections() {
     updateCollection,
     deleteCollection,
     addCard,
+    addGeneratedCards,
     updateCard,
     deleteCard,
   };

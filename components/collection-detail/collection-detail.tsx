@@ -30,8 +30,10 @@ import {
   Calendar,
   TrendingUp,
   TrendingDown,
+  Sparkles,
 } from 'lucide-react';
 import { CardForm } from '@/components/cards/card-form';
+import { AIQuestionGenerator } from '@/components/cards/ai-question-generator';
 import { useCollections } from '@/hooks/use-collections';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
@@ -60,7 +62,7 @@ export function CollectionDetail({
   onBack,
   onPractice,
 }: CollectionDetailProps) {
-  const { collections, addCard, updateCard, deleteCard } = useCollections();
+  const { collections, addCard, addGeneratedCards, updateCard, deleteCard } = useCollections();
   const [searchTerm, setSearchTerm] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCard, setEditingCard] = useState<Card | undefined>();
@@ -83,11 +85,15 @@ export function CollectionDetail({
         description: 'Your flashcard has been updated.',
       });
     } else {
-      addCard(currentCollection.id, question, answer);
+      addCard(currentCollection.id, question, answer, false);
       toast.success('Card added successfully!', {
         description: 'Your new flashcard has been added to the collection.',
       });
     }
+  };
+
+  const handleGeneratedQuestions = (questions: any[]) => {
+    addGeneratedCards(currentCollection.id, questions);
   };
 
   const handleEditCard = (card: Card) => {
@@ -132,13 +138,13 @@ export function CollectionDetail({
                 Back
               </Button>
               <div className="flex items-start space-x-3">
-                <span class="relative flex size-3">
+                <span className="relative flex size-3">
                   <span
-                    class="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"
+                    className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"
                     style={{ backgroundColor: currentCollection.color }}
                   ></span>
                   <span
-                    class="relative inline-flex size-3 rounded-full"
+                    className="relative inline-flex size-3 rounded-full"
                     style={{ backgroundColor: currentCollection.color }}
                   ></span>
                 </span>
@@ -186,6 +192,12 @@ export function CollectionDetail({
               <Badge variant="secondary" className="flex-shrink-0">
                 {currentCollection.cards.length} cards
               </Badge>
+              {currentCollection.cards.some(card => card.isGenerated) && (
+                <Badge variant="outline" className="flex-shrink-0 border-purple-200 text-purple-700 dark:border-purple-800 dark:text-purple-300">
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  AI Generated
+                </Badge>
+              )}
             </div>
           </div>
         </div>
@@ -193,6 +205,14 @@ export function CollectionDetail({
 
       {/* Content */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl">
+        {/* AI Question Generator */}
+        <div className="mb-8">
+          <AIQuestionGenerator
+            collectionTitle={currentCollection.title}
+            onQuestionsGenerated={handleGeneratedQuestions}
+          />
+        </div>
+
         {/* Actions Bar */}
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-8">
           <div className="relative flex-1 max-w-md w-full lg:w-auto">
@@ -211,7 +231,7 @@ export function CollectionDetail({
             className="w-full lg:w-auto"
           >
             <Plus className="mr-2 h-4 w-4" />
-            Add Card
+            Add Card Manually
           </Button>
         </div>
 
@@ -234,21 +254,35 @@ export function CollectionDetail({
               <p className="text-muted-foreground mb-6 leading-relaxed">
                 {searchTerm
                   ? "Try adjusting your search terms to find what you're looking for."
-                  : 'Add your first flashcard to get started with this collection.'}
+                  : 'Add your first flashcard manually or generate them with AI.'}
               </p>
               {!searchTerm && (
-                <Button
-                  onClick={() => setIsFormOpen(true)}
-                  size="lg"
-                  className="px-8"
-                  style={{
-                    backgroundColor: currentCollection.color,
-                    color: practiceButtonTextColor,
-                  }}
-                >
-                  <Plus className="mr-2 h-5 w-5" />
-                  Add Your First Card
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button
+                    onClick={() => setIsFormOpen(true)}
+                    size="lg"
+                    variant="outline"
+                    className="px-8"
+                  >
+                    <Plus className="mr-2 h-5 w-5" />
+                    Add Manually
+                  </Button>
+                  <Button
+                    size="lg"
+                    className="px-8"
+                    style={{
+                      backgroundColor: currentCollection.color,
+                      color: practiceButtonTextColor,
+                    }}
+                    onClick={() => {
+                      const generator = document.querySelector('[data-ai-generator]');
+                      generator?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                  >
+                    <Sparkles className="mr-2 h-5 w-5" />
+                    Generate with AI
+                  </Button>
+                </div>
               )}
             </div>
           </div>
@@ -274,10 +308,18 @@ export function CollectionDetail({
                       card.correctCount + card.incorrectCount;
 
                     return (
-                      <TableRow key={card.id}>
+                      <TableRow 
+                        key={card.id}
+                        className={card.isGenerated ? 'bg-purple-50/30 dark:bg-purple-950/10 border-l-4 border-l-purple-400 dark:border-l-purple-600' : ''}
+                      >
                         <TableCell className="max-w-xs">
-                          <div className="truncate" title={card.question}>
-                            {card.question}
+                          <div className="flex items-center space-x-2">
+                            {card.isGenerated && (
+                              <Sparkles className="h-4 w-4 text-purple-500 dark:text-purple-400 flex-shrink-0" />
+                            )}
+                            <div className="truncate" title={card.question}>
+                              {card.question}
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell className="max-w-xs">

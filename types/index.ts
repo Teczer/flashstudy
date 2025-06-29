@@ -7,6 +7,7 @@ export interface Card {
   correctCount: number;
   incorrectCount: number;
   weight: number; // Higher weight = shown more frequently
+  isGenerated?: boolean; // New property to track AI-generated cards
 }
 
 export interface Collection {
@@ -37,6 +38,11 @@ export interface Theme {
   primary: string;
   secondary: string;
   accent: string;
+}
+
+export interface GeneratedQuestion {
+  question: string;
+  answer: string;
 }
 
 export const COLLECTION_COLORS = [
