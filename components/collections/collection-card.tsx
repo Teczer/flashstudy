@@ -56,8 +56,18 @@ export function CollectionCard({
   const handleMouseEnter = useCallback(() => setIsHovered(true), []);
   const handleMouseLeave = useCallback(() => setIsHovered(false), []);
   const handleCardClick = useCallback(() => onView(collection), [onView, collection]);
-  const handleEditClick = useCallback(() => onEdit(collection), [onEdit, collection]);
-  const handleDeleteClick = useCallback(() => onDelete(collection.id), [onDelete, collection.id]);
+  
+  // Fixed event handlers with proper stopPropagation
+  const handleEditClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    onEdit(collection);
+  }, [onEdit, collection]);
+  
+  const handleDeleteClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete(collection.id);
+  }, [onDelete, collection.id]);
+  
   const handlePracticeClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     onPractice(collection);
@@ -103,18 +113,19 @@ export function CollectionCard({
           
           <div className="flex items-center space-x-1">
             <DropdownMenu>
-              <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+              <DropdownMenuTrigger asChild>
                 <Button 
                   variant="ghost" 
                   size="sm"
                   className={`transition-opacity duration-200 flex-shrink-0 ${
                     isHovered ? 'opacity-100' : 'opacity-0'
                   }`}
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
                 <DropdownMenuItem onClick={handleEditClick}>
                   <Edit className="mr-2 h-4 w-4" />
                   Edit
