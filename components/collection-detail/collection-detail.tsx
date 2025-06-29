@@ -64,7 +64,8 @@ export function CollectionDetail({
   onPractice,
 }: CollectionDetailProps) {
   const { t } = useTranslation();
-  const { collections, addCard, addGeneratedCards, updateCard, deleteCard } = useCollections();
+  const { collections, addCard, addGeneratedCards, updateCard, deleteCard } =
+    useCollections();
   const [searchTerm, setSearchTerm] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCard, setEditingCard] = useState<Card | undefined>();
@@ -192,10 +193,15 @@ export function CollectionDetail({
                 </span>
               </div>
               <Badge variant="secondary" className="flex-shrink-0">
-                {t('common.cardsCount', { count: currentCollection.cards.length })}
+                {t('common.cardsCount', {
+                  count: currentCollection.cards.length,
+                })}
               </Badge>
-              {currentCollection.cards.some(card => card.isGenerated) && (
-                <Badge variant="outline" className="flex-shrink-0 border-purple-200 text-purple-700 dark:border-purple-800 dark:text-purple-300">
+              {currentCollection.cards.some((card) => card.isGenerated) && (
+                <Badge
+                  variant="outline"
+                  className="flex-shrink-0 border-purple-200 text-purple-700 dark:border-purple-800 dark:text-purple-300"
+                >
                   <Sparkles className="h-3 w-3 mr-1" />
                   {t('common.aiGenerated')}
                 </Badge>
@@ -277,7 +283,9 @@ export function CollectionDetail({
                       color: practiceButtonTextColor,
                     }}
                     onClick={() => {
-                      const generator = document.querySelector('[data-ai-generator]');
+                      const generator = document.querySelector(
+                        '[data-ai-generator]'
+                      );
                       generator?.scrollIntoView({ behavior: 'smooth' });
                     }}
                   >
@@ -294,12 +302,18 @@ export function CollectionDetail({
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="min-w-[200px]">{t('cards.question')}</TableHead>
-                    <TableHead className="min-w-[200px]">{t('cards.answer')}</TableHead>
+                    <TableHead className="min-w-[200px]">
+                      {t('cards.question')}
+                    </TableHead>
+                    <TableHead className="min-w-[200px]">
+                      {t('cards.answer')}
+                    </TableHead>
                     <TableHead className="w-32 text-center">
                       {t('cards.successRate')}
                     </TableHead>
-                    <TableHead className="w-32 text-center">{t('cards.attempts')}</TableHead>
+                    <TableHead className="w-32 text-center">
+                      {t('cards.attempts')}
+                    </TableHead>
                     <TableHead className="w-20"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -310,9 +324,13 @@ export function CollectionDetail({
                       card.correctCount + card.incorrectCount;
 
                     return (
-                      <TableRow 
+                      <TableRow
                         key={card.id}
-                        className={card.isGenerated ? 'bg-purple-50/30 dark:bg-purple-950/10 border-l-4 border-l-purple-400 dark:border-l-purple-600' : ''}
+                        className={
+                          card.isGenerated
+                            ? 'bg-purple-50/30 dark:bg-purple-950/10 border-l-4 border-l-purple-400 dark:border-l-purple-600'
+                            : ''
+                        }
                       >
                         <TableCell className="max-w-xs">
                           <div className="flex items-center space-x-2">
@@ -338,13 +356,15 @@ export function CollectionDetail({
                               {successRate >= 70 ? (
                                 <TrendingUp className="h-4 w-4 text-emerald-600" />
                               ) : successRate >= 40 ? (
-                                <div className="h-4 w-4 bg-yellow-500 rounded-full" />
+                                <div className="animate-ping h-2 w-2 bg-yellow-500 rounded-full" />
                               ) : (
                                 <TrendingDown className="h-4 w-4 text-red-600" />
                               )}
                             </div>
                           ) : (
-                            <span className="text-muted-foreground">{t('common.new')}</span>
+                            <span className="text-muted-foreground">
+                              {t('common.new')}
+                            </span>
                           )}
                         </TableCell>
                         <TableCell className="text-center">
