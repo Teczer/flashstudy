@@ -28,8 +28,8 @@ export default function Home() {
 
   const handlePractice = useCallback((collection: Collection) => {
     if (collection.cards.length === 0) {
-      toast.error(t.noCardsAvailable, {
-        description: t.noCardsAvailableDescription,
+      toast.error(t('toast.noCardsAvailable'), {
+        description: t('toast.noCardsAvailableDescription'),
       });
       return;
     }
@@ -40,8 +40,8 @@ export default function Home() {
 
   const handlePracticeComplete = useCallback(
     (score: { correct: number; total: number }) => {
-      toast.success(t.sessionCompleted, {
-        description: `${t.sessionCompletedDescription} ${score.correct} out of ${score.total} cards correct.`,
+      toast.success(t('toast.sessionCompleted'), {
+        description: `${t('toast.sessionCompletedDescription')} ${score.correct} out of ${score.total} cards correct.`,
       });
     },
     [t]
@@ -62,7 +62,7 @@ export default function Home() {
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">{t.loadingFlashcards}</p>
+            <p className="text-muted-foreground">{t('toast.loadingFlashcards')}</p>
           </div>
         </div>
       ) : (
@@ -73,10 +73,10 @@ export default function Home() {
               <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl">
                 <div className="mb-8 text-center sm:text-left">
                   <h1 className="text-3xl sm:text-4xl font-bold mb-3 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-                    {t.allCollections}
+                    {t('collections.allCollections')}
                   </h1>
                   <p className="text-muted-foreground text-lg max-w-2xl mx-auto sm:mx-0">
-                    {t.allCollectionsDescription}
+                    {t('collections.allCollectionsDescription')}
                   </p>
                 </div>
                 <div className="w-full">

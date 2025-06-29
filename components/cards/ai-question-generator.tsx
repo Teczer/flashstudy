@@ -78,7 +78,7 @@ export function AIQuestionGenerator({
   };
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-purple-50/50 to-blue-50/50 dark:from-purple-950/20 dark:to-blue-950/20 border-purple-200/50 dark:border-purple-800/50">
+    <Card className="p-6 bg-gradient-to-br from-purple-50/50 to-blue-50/50 dark:from-purple-950/20 dark:to-blue-950/20 border-purple-200/50 dark:border-purple-800/50" data-ai-generator>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center space-x-3">

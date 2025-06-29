@@ -344,7 +344,7 @@ export function CollectionDetail({
                               )}
                             </div>
                           ) : (
-                            <span className="text-muted-foreground">{t('cards.new')}</span>
+                            <span className="text-muted-foreground">{t('common.new')}</span>
                           )}
                         </TableCell>
                         <TableCell className="text-center">

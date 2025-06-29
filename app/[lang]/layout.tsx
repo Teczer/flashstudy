@@ -14,18 +14,20 @@ export const metadata: Metadata = {
     'Create, organize, and practice with intelligent flashcards that adapt to your learning progress.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: { lang: Locale };
+  params: Promise<{ lang: Locale }>;
 }) {
+  const { lang } = await params;
+
   return (
-    <html lang={params.lang} suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider defaultTheme="system" storageKey="flashstudy-theme">
-          <LanguageProvider initialLanguage={params.lang}>
+          <LanguageProvider initialLanguage={lang}>
             {children}
             <Toaster />
           </LanguageProvider>
