@@ -120,10 +120,7 @@ export function CollectionDetail({ collection: initialCollection, onBack, onPrac
                 Back
               </Button>
               <div className="flex items-start space-x-3">
-                <div 
-                  className="animate-ping size-3 rounded-full mt-1 flex-shrink-0"
-              
-                />
+
 
                 <span class="relative flex size-3">
   <span class="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"
