@@ -1,8 +1,10 @@
-import './globals.css';
+import '../globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
+import { Locale } from '@/i18n.config';
+import { LanguageProvider } from '@/lib/language-context';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -14,15 +16,19 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: { lang: Locale };
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={params.lang} suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider defaultTheme="system" storageKey="flashstudy-theme">
-          {children}
-          <Toaster />
+          <LanguageProvider initialLanguage={params.lang}>
+            {children}
+            <Toaster />
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

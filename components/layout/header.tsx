@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from '@/components/theme-provider';
 import { LanguageSelector } from './language-selector';
 import { Moon, Sun, BookOpen } from 'lucide-react';
-import { useTranslation } from '@/lib/i18n';
+import { useTranslation } from '@/lib/language-context';
 
 export function Header() {
   const { theme, setTheme } = useTheme();

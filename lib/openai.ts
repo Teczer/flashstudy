@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import { GeneratedQuestion } from '@/types';
+import { Language } from '@/lib/language-context';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -11,7 +12,7 @@ export async function generateQuestions(
   prompt: string,
   count: number,
   difficulty: 'easy' | 'intermediate' | 'hard',
-  language: 'fr' | 'en' | 'es' | 'de',
+  language: Language,
   collectionTitle?: string
 ): Promise<GeneratedQuestion[]> {
   try {

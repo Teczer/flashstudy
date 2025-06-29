@@ -7,7 +7,7 @@ import { CollectionsGrid } from '@/components/collections/collections-grid';
 import { CollectionDetail } from '@/components/collection-detail/collection-detail';
 import { PracticeSession } from '@/components/practice/practice-session';
 import { useCollections } from '@/hooks/use-collections';
-import { useTranslation } from '@/lib/i18n';
+import { useTranslation } from '@/lib/language-context';
 import { toast } from 'sonner';
 
 type View = 'collections' | 'collection-detail' | 'practice';
@@ -62,7 +62,7 @@ export default function Home() {
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading your flashcards...</p>
+            <p className="text-muted-foreground">{t.loadingFlashcards}</p>
           </div>
         </div>
       ) : (

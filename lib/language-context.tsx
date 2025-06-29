@@ -1,4 +1,9 @@
-export type Language = 'fr' | 'en' | 'es' | 'de';
+'use client';
+
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Locale } from '@/i18n.config';
+
+export type Language = Locale;
 
 export interface Translations {
   // Header
@@ -121,6 +126,7 @@ export interface Translations {
   generationFailedDescription: string;
   noCardsAvailable: string;
   noCardsAvailableDescription: string;
+  loadingFlashcards: string;
   
   // Confirmations
   deleteCardConfirm: string;
@@ -256,6 +262,7 @@ export const translations: Record<Language, Translations> = {
     generationFailedDescription: 'Veuillez réessayer.',
     noCardsAvailable: 'Aucune carte disponible',
     noCardsAvailableDescription: 'Ajoutez des cartes à cette collection avant de pratiquer.',
+    loadingFlashcards: 'Chargement de vos cartes mémoire...',
     
     // Confirmations
     deleteCardConfirm: 'Êtes-vous sûr de vouloir supprimer cette carte ?',
@@ -390,6 +397,7 @@ export const translations: Record<Language, Translations> = {
     generationFailedDescription: 'Please try again.',
     noCardsAvailable: 'No cards available',
     noCardsAvailableDescription: 'Add some cards to this collection before practicing.',
+    loadingFlashcards: 'Loading your flashcards...',
     
     // Confirmations
     deleteCardConfirm: 'Are you sure you want to delete this card?',
@@ -524,6 +532,7 @@ export const translations: Record<Language, Translations> = {
     generationFailedDescription: 'Por favor inténtalo de nuevo.',
     noCardsAvailable: 'No hay tarjetas disponibles',
     noCardsAvailableDescription: 'Añade algunas tarjetas a esta colección antes de practicar.',
+    loadingFlashcards: 'Cargando tus tarjetas de memoria...',
     
     // Confirmations
     deleteCardConfirm: '¿Estás seguro de que quieres eliminar esta tarjeta?',
@@ -658,6 +667,7 @@ export const translations: Record<Language, Translations> = {
     generationFailedDescription: 'Bitte versuchen Sie es erneut.',
     noCardsAvailable: 'Keine Karten verfügbar',
     noCardsAvailableDescription: 'Fügen Sie einige Karten zu dieser Sammlung hinzu, bevor Sie üben.',
+    loadingFlashcards: 'Lade Ihre Karteikarten...',
     
     // Confirmations
     deleteCardConfirm: 'Sind Sie sicher, dass Sie diese Karte löschen möchten?',
@@ -672,8 +682,22 @@ export const translations: Record<Language, Translations> = {
   },
 };
 
-export function useTranslation() {
-  const [language, setLanguage] = useState<Language>('fr');
+interface LanguageContextType {
+  t: Translations;
+  language: Language;
+  changeLanguage: (newLanguage: Language) => void;
+}
+
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+
+export function LanguageProvider({ 
+  children, 
+  initialLanguage 
+}: { 
+  children: React.ReactNode;
+  initialLanguage: Language;
+}) {
+  const [language, setLanguage] = useState<Language>(initialLanguage);
 
   useEffect(() => {
     const savedLanguage = localStorage.getItem('flashstudy-language') as Language;
@@ -685,11 +709,34 @@ export function useTranslation() {
   const changeLanguage = (newLanguage: Language) => {
     setLanguage(newLanguage);
     localStorage.setItem('flashstudy-language', newLanguage);
+    
+    // Update URL to reflect language change
+    const currentPath = window.location.pathname;
+    const pathSegments = currentPath.split('/');
+    
+    // Replace the language segment (first segment after /)
+    if (pathSegments[1] && ['fr', 'en', 'es', 'de'].includes(pathSegments[1])) {
+      pathSegments[1] = newLanguage;
+      const newPath = pathSegments.join('/');
+      window.history.pushState({}, '', newPath);
+    }
   };
 
-  return {
-    t: translations[language],
-    language,
-    changeLanguage,
-  };
+  return (
+    <LanguageContext.Provider value={{
+      t: translations[language],
+      language,
+      changeLanguage,
+    }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+}
+
+export function useTranslation() {
+  const context = useContext(LanguageContext);
+  if (context === undefined) {
+    throw new Error('useTranslation must be used within a LanguageProvider');
+  }
+  return context;
 }
