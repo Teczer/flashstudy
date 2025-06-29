@@ -1,0 +1,150 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Collection, Card } from '@/types';
+import { storage } from '@/lib/storage';
+import { calculateCardWeight } from '@/lib/card-ranking';
+
+export function useCollections() {
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadedCollections = storage.getCollections();
+    setCollections(loadedCollections);
+    setLoading(false);
+  }, []);
+
+  const saveCollections = (newCollections: Collection[]) => {
+    setCollections(newCollections);
+    storage.saveCollections(newCollections);
+  };
+
+  const createCollection = (title: string, description: string, color: string, folderId?: string): Collection => {
+    const newCollection: Collection = {
+      id: crypto.randomUUID(),
+      title,
+      description,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cards: [],
+      color,
+      folderIds: folderId ? [folderId] : [],
+    };
+
+    const newCollections = [...collections, newCollection];
+    saveCollections(newCollections);
+    return newCollection;
+  };
+
+  const updateCollection = (id: string, updates: Partial<Collection>) => {
+    const newCollections = collections.map(collection =>
+      collection.id === id
+        ? { ...collection, ...updates, updatedAt: new Date() }
+        : collection
+    );
+    saveCollections(newCollections);
+  };
+
+  const deleteCollection = (id: string) => {
+    const newCollections = collections.filter(collection => collection.id !== id);
+    saveCollections(newCollections);
+  };
+
+  const addCollectionToFolder = (collectionId: string, folderId: string) => {
+    const newCollections = collections.map(collection =>
+      collection.id === collectionId
+        ? { 
+            ...collection, 
+            folderIds: collection.folderIds.includes(folderId) 
+              ? collection.folderIds 
+              : [...collection.folderIds, folderId],
+            updatedAt: new Date() 
+          }
+        : collection
+    );
+    saveCollections(newCollections);
+  };
+
+  const removeCollectionFromFolder = (collectionId: string, folderId: string) => {
+    const newCollections = collections.map(collection =>
+      collection.id === collectionId
+        ? { 
+            ...collection, 
+            folderIds: collection.folderIds.filter(id => id !== folderId),
+            updatedAt: new Date() 
+          }
+        : collection
+    );
+    saveCollections(newCollections);
+  };
+
+  const addCard = (collectionId: string, question: string, answer: string): Card => {
+    const newCard: Card = {
+      id: crypto.randomUUID(),
+      question,
+      answer,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      correctCount: 0,
+      incorrectCount: 0,
+      weight: 1,
+    };
+
+    const newCollections = collections.map(collection =>
+      collection.id === collectionId
+        ? {
+            ...collection,
+            cards: [...collection.cards, newCard],
+            updatedAt: new Date(),
+          }
+        : collection
+    );
+
+    saveCollections(newCollections);
+    return newCard;
+  };
+
+  const updateCard = (collectionId: string, cardId: string, updates: Partial<Card>) => {
+    const newCollections = collections.map(collection =>
+      collection.id === collectionId
+        ? {
+            ...collection,
+            cards: collection.cards.map(card =>
+              card.id === cardId
+                ? { ...card, ...updates, updatedAt: new Date(), weight: calculateCardWeight({...card, ...updates}) }
+                : card
+            ),
+            updatedAt: new Date(),
+          }
+        : collection
+    );
+    saveCollections(newCollections);
+  };
+
+  const deleteCard = (collectionId: string, cardId: string) => {
+    const newCollections = collections.map(collection =>
+      collection.id === collectionId
+        ? {
+            ...collection,
+            cards: collection.cards.filter(card => card.id !== cardId),
+            updatedAt: new Date(),
+          }
+        : collection
+    );
+    saveCollections(newCollections);
+  };
+
+  return {
+    collections,
+    loading,
+    createCollection,
+    updateCollection,
+    deleteCollection,
+    addCollectionToFolder,
+    removeCollectionFromFolder,
+    addCard,
+    updateCard,
+    deleteCard,
+  };
+}
