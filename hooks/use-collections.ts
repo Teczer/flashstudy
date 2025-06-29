@@ -20,7 +20,11 @@ export function useCollections() {
     storage.saveCollections(newCollections);
   };
 
-  const createCollection = (title: string, description: string, color: string): Collection => {
+  const createCollection = (
+    title: string,
+    description: string,
+    color: string
+  ): Collection => {
     const newCollection: Collection = {
       id: crypto.randomUUID(),
       title,
@@ -37,7 +41,7 @@ export function useCollections() {
   };
 
   const updateCollection = (id: string, updates: Partial<Collection>) => {
-    const newCollections = collections.map(collection =>
+    const newCollections = collections.map((collection) =>
       collection.id === id
         ? { ...collection, ...updates, updatedAt: new Date() }
         : collection
@@ -46,11 +50,17 @@ export function useCollections() {
   };
 
   const deleteCollection = (id: string) => {
-    const newCollections = collections.filter(collection => collection.id !== id);
+    const newCollections = collections.filter(
+      (collection) => collection.id !== id
+    );
     saveCollections(newCollections);
   };
 
-  const addCard = (collectionId: string, question: string, answer: string): Card => {
+  const addCard = (
+    collectionId: string,
+    question: string,
+    answer: string
+  ): Card => {
     const newCard: Card = {
       id: crypto.randomUUID(),
       question,
@@ -62,7 +72,7 @@ export function useCollections() {
       weight: 1,
     };
 
-    const newCollections = collections.map(collection =>
+    const newCollections = collections.map((collection) =>
       collection.id === collectionId
         ? {
             ...collection,
@@ -76,14 +86,23 @@ export function useCollections() {
     return newCard;
   };
 
-  const updateCard = (collectionId: string, cardId: string, updates: Partial<Card>) => {
-    const newCollections = collections.map(collection =>
+  const updateCard = (
+    collectionId: string,
+    cardId: string,
+    updates: Partial<Card>
+  ) => {
+    const newCollections = collections.map((collection) =>
       collection.id === collectionId
         ? {
             ...collection,
-            cards: collection.cards.map(card =>
+            cards: collection.cards.map((card) =>
               card.id === cardId
-                ? { ...card, ...updates, updatedAt: new Date(), weight: calculateCardWeight({...card, ...updates}) }
+                ? {
+                    ...card,
+                    ...updates,
+                    updatedAt: new Date(),
+                    weight: calculateCardWeight({ ...card, ...updates }),
+                  }
                 : card
             ),
             updatedAt: new Date(),
@@ -94,11 +113,11 @@ export function useCollections() {
   };
 
   const deleteCard = (collectionId: string, cardId: string) => {
-    const newCollections = collections.map(collection =>
+    const newCollections = collections.map((collection) =>
       collection.id === collectionId
         ? {
             ...collection,
-            cards: collection.cards.filter(card => card.id !== cardId),
+            cards: collection.cards.filter((card) => card.id !== cardId),
             updatedAt: new Date(),
           }
         : collection

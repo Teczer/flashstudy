@@ -85,7 +85,7 @@ export function CollectionsGrid({
   };
 
   const handleDelete = (id: string) => {
-    const collection = collections.find(c => c.id === id);
+    const collection = collections.find((c) => c.id === id);
     if (
       confirm(
         `Are you sure you want to delete "${collection?.title}"? This action cannot be undone and will delete all ${collection?.cards.length || 0} cards in this collection.`
@@ -155,9 +155,7 @@ export function CollectionsGrid({
               <Plus className="h-8 w-8 text-primary" />
             </div>
             <h3 className="text-xl font-semibold mb-3">
-              {searchTerm
-                ? 'No collections found'
-                : 'No collections yet'}
+              {searchTerm ? 'No collections found' : 'No collections yet'}
             </h3>
             <p className="text-muted-foreground mb-6 leading-relaxed">
               {searchTerm

@@ -20,14 +20,20 @@ interface PracticeSessionProps {
 const MemoizedCardView = React.memo(CardView);
 const MemoizedProgress = React.memo(Progress);
 
-export function PracticeSession({ collection, onComplete, onExit }: PracticeSessionProps) {
+export function PracticeSession({
+  collection,
+  onComplete,
+  onExit,
+}: PracticeSessionProps) {
   const { updateCard } = useCollections();
   const [cards, setCards] = useState<Card[]>([]);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [incorrectCount, setIncorrectCount] = useState(0);
-  const [results, setResults] = useState<Array<{ cardId: string; correct: boolean }>>([]);
+  const [results, setResults] = useState<
+    Array<{ cardId: string; correct: boolean }>
+  >([]);
   const [isComplete, setIsComplete] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [cardKey, setCardKey] = useState(0);
@@ -42,57 +48,72 @@ export function PracticeSession({ collection, onComplete, onExit }: PracticeSess
   }, [shuffledCards]);
 
   // Memoize current card and progress calculations
-  const currentCard = useMemo(() => cards[currentCardIndex], [cards, currentCardIndex]);
-  const progress = useMemo(() => 
-    cards.length > 0 ? ((currentCardIndex) / cards.length) * 100 : 0, 
+  const currentCard = useMemo(
+    () => cards[currentCardIndex],
+    [cards, currentCardIndex]
+  );
+  const progress = useMemo(
+    () => (cards.length > 0 ? (currentCardIndex / cards.length) * 100 : 0),
     [currentCardIndex, cards.length]
   );
-  const remainingCards = useMemo(() => 
-    cards.length - currentCardIndex - 1, 
+  const remainingCards = useMemo(
+    () => cards.length - currentCardIndex - 1,
     [cards.length, currentCardIndex]
   );
 
   // Optimized answer handler with useCallback to prevent re-renders
-  const handleAnswer = useCallback((correct: boolean) => {
-    if (!currentCard || isAnimating) return;
+  const handleAnswer = useCallback(
+    (correct: boolean) => {
+      if (!currentCard || isAnimating) return;
 
-    setIsAnimating(true);
+      setIsAnimating(true);
 
-    // Batch state updates for better performance
-    const updates = correct
-      ? { correctCount: currentCard.correctCount + 1 }
-      : { incorrectCount: currentCard.incorrectCount + 1 };
-    
-    updateCard(collection.id, currentCard.id, updates);
+      // Batch state updates for better performance
+      const updates = correct
+        ? { correctCount: currentCard.correctCount + 1 }
+        : { incorrectCount: currentCard.incorrectCount + 1 };
 
-    // Use functional updates to avoid stale closures
-    setResults(prev => [...prev, { cardId: currentCard.id, correct }]);
-    
-    if (correct) {
-      setCorrectCount(prev => prev + 1);
-    } else {
-      setIncorrectCount(prev => prev + 1);
-    }
+      updateCard(collection.id, currentCard.id, updates);
 
-    // Use requestAnimationFrame for smoother animations
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        if (currentCardIndex + 1 >= cards.length) {
-          setIsComplete(true);
-          onComplete({ 
-            correct: correct ? correctCount + 1 : correctCount, 
-            total: cards.length 
-          });
-        } else {
-          // Batch state updates
-          setCurrentCardIndex(prev => prev + 1);
-          setShowAnswer(false);
-          setCardKey(prev => prev + 1);
-        }
-        setIsAnimating(false);
-      }, 300); // Reduced timeout for snappier feel
-    });
-  }, [currentCard, isAnimating, collection.id, updateCard, currentCardIndex, cards.length, correctCount, onComplete]);
+      // Use functional updates to avoid stale closures
+      setResults((prev) => [...prev, { cardId: currentCard.id, correct }]);
+
+      if (correct) {
+        setCorrectCount((prev) => prev + 1);
+      } else {
+        setIncorrectCount((prev) => prev + 1);
+      }
+
+      // Use requestAnimationFrame for smoother animations
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          if (currentCardIndex + 1 >= cards.length) {
+            setIsComplete(true);
+            onComplete({
+              correct: correct ? correctCount + 1 : correctCount,
+              total: cards.length,
+            });
+          } else {
+            // Batch state updates
+            setCurrentCardIndex((prev) => prev + 1);
+            setShowAnswer(false);
+            setCardKey((prev) => prev + 1);
+          }
+          setIsAnimating(false);
+        }, 300); // Reduced timeout for snappier feel
+      });
+    },
+    [
+      currentCard,
+      isAnimating,
+      collection.id,
+      updateCard,
+      currentCardIndex,
+      cards.length,
+      correctCount,
+      onComplete,
+    ]
+  );
 
   // Optimized restart handler
   const handleRestart = useCallback(() => {
@@ -109,7 +130,7 @@ export function PracticeSession({ collection, onComplete, onExit }: PracticeSess
 
   // Optimized flip handler
   const handleFlip = useCallback(() => {
-    setShowAnswer(prev => !prev);
+    setShowAnswer((prev) => !prev);
   }, []);
 
   if (cards.length === 0) {
@@ -136,7 +157,7 @@ export function PracticeSession({ collection, onComplete, onExit }: PracticeSess
 
   if (isComplete) {
     const percentage = Math.round((correctCount / cards.length) * 100);
-    
+
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-lg">
@@ -158,9 +179,9 @@ export function PracticeSession({ collection, onComplete, onExit }: PracticeSess
               <div className="text-muted-foreground">
                 {correctCount} out of {cards.length} correct
               </div>
-              
+
               <MemoizedProgress value={percentage} className="w-full h-3" />
-              
+
               <div className="flex justify-center space-x-6 text-sm">
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 bg-emerald-500 rounded-full"></div>
@@ -168,13 +189,20 @@ export function PracticeSession({ collection, onComplete, onExit }: PracticeSess
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 bg-red-500 rounded-full"></div>
-                  <span className="font-medium">Incorrect: {incorrectCount}</span>
+                  <span className="font-medium">
+                    Incorrect: {incorrectCount}
+                  </span>
                 </div>
               </div>
             </div>
 
             <div className="flex space-x-4">
-              <Button onClick={handleRestart} variant="outline" size="lg" className="flex-1">
+              <Button
+                onClick={handleRestart}
+                variant="outline"
+                size="lg"
+                className="flex-1"
+              >
                 <RotateCcw className="mr-2 h-4 w-4" />
                 Practice Again
               </Button>
@@ -206,7 +234,7 @@ export function PracticeSession({ collection, onComplete, onExit }: PracticeSess
               Exit
             </Button>
           </div>
-          
+
           <div className="space-y-3">
             <div className="flex justify-between text-sm text-muted-foreground">
               <span>Progress</span>
@@ -232,60 +260,63 @@ export function PracticeSession({ collection, onComplete, onExit }: PracticeSess
 
       {/* Main Content - Fixed Height Container */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-4xl">
-        <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 280px)' }}>
+        <div
+          className="flex items-center justify-center"
+          style={{ minHeight: 'calc(100vh - 280px)' }}
+        >
           <div className="w-full max-w-2xl">
             {/* Card Stack Visual Effect - Optimized with transform3d for GPU acceleration */}
             <div className="relative mb-8">
               {/* Background cards to simulate realistic stack */}
               {remainingCards > 2 && (
-                <div 
+                <div
                   className="absolute inset-0 bg-card/30 rounded-xl border border-border/30"
-                  style={{ 
-                    width: '98%', 
-                    height: '98%', 
-                    left: '1%', 
+                  style={{
+                    width: '98%',
+                    height: '98%',
+                    left: '1%',
                     top: '1%',
                     transform: 'translate3d(3px, 3px, 0) rotateZ(1deg)',
-                    willChange: 'transform'
+                    willChange: 'transform',
                   }}
                 />
               )}
               {remainingCards > 1 && (
-                <div 
+                <div
                   className="absolute inset-0 bg-card/50 rounded-xl border border-border/40"
-                  style={{ 
-                    width: '99%', 
-                    height: '99%', 
-                    left: '0.5%', 
+                  style={{
+                    width: '99%',
+                    height: '99%',
+                    left: '0.5%',
                     top: '0.5%',
                     transform: 'translate3d(1.5px, 1.5px, 0) rotateZ(0.5deg)',
-                    willChange: 'transform'
+                    willChange: 'transform',
                   }}
                 />
               )}
               {remainingCards > 0 && (
-                <div 
+                <div
                   className="absolute inset-0 bg-card/70 rounded-xl border border-border/50"
-                  style={{ 
-                    width: '99.5%', 
-                    height: '99.5%', 
-                    left: '0.25%', 
+                  style={{
+                    width: '99.5%',
+                    height: '99.5%',
+                    left: '0.25%',
                     top: '0.25%',
                     transform: 'translate3d(0, 0, 0)',
-                    willChange: 'transform'
+                    willChange: 'transform',
                   }}
                 />
               )}
-              
+
               {/* Current Card - Optimized with transform3d and will-change */}
-              <div 
+              <div
                 className="relative transition-all duration-300 ease-out"
                 style={{
-                  transform: isAnimating 
-                    ? 'translate3d(100%, 0, 0) rotateZ(12deg) scale(0.95)' 
+                  transform: isAnimating
+                    ? 'translate3d(100%, 0, 0) rotateZ(12deg) scale(0.95)'
                     : 'translate3d(0, 0, 0) rotateZ(0deg) scale(1)',
                   opacity: isAnimating ? 0 : 1,
-                  willChange: 'transform, opacity'
+                  willChange: 'transform, opacity',
                 }}
               >
                 <MemoizedCardView
@@ -326,7 +357,8 @@ export function PracticeSession({ collection, onComplete, onExit }: PracticeSess
                 <div className="text-center w-full">
                   <div className="bg-card border rounded-xl p-6 max-w-lg mx-auto">
                     <p className="text-muted-foreground text-lg leading-relaxed">
-                      Think of your answer, then click the card to reveal the correct answer.
+                      Think of your answer, then click the card to reveal the
+                      correct answer.
                     </p>
                   </div>
                 </div>

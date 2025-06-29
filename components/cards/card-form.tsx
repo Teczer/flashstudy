@@ -43,12 +43,12 @@ export function CardForm({ card, open, onOpenChange, onSave }: CardFormProps) {
         <DialogHeader>
           <DialogTitle>{card ? 'Edit Card' : 'Add New Card'}</DialogTitle>
           <DialogDescription>
-            {card 
+            {card
               ? 'Update the question and answer for this flashcard.'
               : 'Create a new flashcard by adding a question and its answer.'}
           </DialogDescription>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="question">Question</Label>
@@ -61,7 +61,7 @@ export function CardForm({ card, open, onOpenChange, onSave }: CardFormProps) {
               rows={3}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="answer">Answer</Label>
             <Textarea
@@ -73,9 +73,13 @@ export function CardForm({ card, open, onOpenChange, onSave }: CardFormProps) {
               rows={3}
             />
           </div>
-          
+
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={!question.trim() || !answer.trim()}>

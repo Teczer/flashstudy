@@ -18,7 +18,7 @@ export function Header() {
             Flashstudy
           </h1>
         </div>
-        
+
         <Button
           variant="ghost"
           size="icon"
