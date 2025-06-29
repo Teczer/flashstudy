@@ -44,6 +44,7 @@ import { AIQuestionGenerator } from '@/components/cards/ai-question-generator';
 import { ImageToFlashcards } from '@/components/cards/image-to-flashcards';
 import { useCollections } from '@/hooks/use-collections';
 import { formatDistanceToNow } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import { toast } from 'sonner';
 
 interface CollectionDetailProps {
@@ -194,7 +195,7 @@ export function CollectionDetail({
                   Mis à jour{' '}
                   {formatDistanceToNow(currentCollection.updatedAt, {
                     addSuffix: true,
-                    locale: { code: 'fr' },
+                    locale: fr,
                   })}
                 </span>
               </div>
