@@ -2,8 +2,11 @@
 
 import Link from 'next/link';
 import { Home, ArrowLeft } from 'lucide-react';
+import { useTranslation } from '@/lib/language-context';
 
 export default function NotFound() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full text-center">
@@ -12,11 +15,10 @@ export default function NotFound() {
             <span className="text-3xl font-bold text-slate-600">404</span>
           </div>
           <h1 className="text-2xl font-bold text-slate-900 mb-2">
-            Page Not Found
+            {t('notFound.title')}
           </h1>
           <p className="text-slate-600 mb-8">
-            Sorry, we couldn't find the page you're looking for. It might have
-            been moved, deleted, or you entered the wrong URL.
+            {t('notFound.description')}
           </p>
         </div>
 
@@ -26,7 +28,7 @@ export default function NotFound() {
             className="inline-flex items-center justify-center gap-2 w-full bg-slate-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-800 transition-colors"
           >
             <Home className="w-4 h-4" />
-            Go Home
+            {t('notFound.goHome')}
           </Link>
 
           <button
@@ -34,7 +36,7 @@ export default function NotFound() {
             className="inline-flex items-center justify-center gap-2 w-full bg-white text-slate-700 px-6 py-3 rounded-lg font-medium border border-slate-200 hover:bg-slate-50 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Go Back
+            {t('notFound.goBack')}
           </button>
         </div>
       </div>
